@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Button, Col, Row } from 'react-bootstrap';
+import { Form, Button, Col, Row, Container } from 'react-bootstrap';
 import { Country, State, City } from "country-state-city";
 import Select from "react-select";
 import { useEffect, useState } from "react";
@@ -50,8 +50,10 @@ export default function HomePage() {
     };
 
     return (
-        <div>
-            <Form onSubmit={handleSubmit}>
+        <>
+        <link rel="stylesheet" href="src/pages/HomePage.css"></link>
+        <Container bsPrefix="registerContainer">
+            <Form onSubmit={handleSubmit} class="text-white">
                 <Row>
                     <Col>
                         <Form.Group class="mb-3">
@@ -134,6 +136,7 @@ export default function HomePage() {
                 </Button>
                 <div className="message">{message ? <p>{message}</p> : null}</div>
             </Form>
-        </div>
+        </Container>
+        </>
     );
 }
