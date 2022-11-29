@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Button, Row, Col, Container } from 'react-bootstrap';
+import { Form, Button, Row, Container } from 'react-bootstrap';
 import { useState } from "react";
 import axios from "axios";
 
@@ -35,7 +35,7 @@ export default function LoginPage() {
         <div>
             <Form onSubmit={handleSubmit} method="POST">
                 <Container className="loginBox">
-                    <Form.Label class="loginTitle" >Login</Form.Label>
+                <p class="text-center" id="titletLogin">Login</p>
                     <Row>
                         <Form.Group class="mb-3" controlId="exampleForm.ControlInput1">
                             <Form.Control type="email" placeholder="nome@exemplo.com" value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -47,12 +47,13 @@ export default function LoginPage() {
                     </Row>
                     
                     <Form.Control type="text" class="form-control" id="role" hidden={true} value={role} readOnly={true}></Form.Control>
-                    <Row>
-                        <Button className="buttonSubmit" variant="primary" type="submit">
+                    <Row id="rowButton">
+                        <Button variant="primary" type="submit" >
                             Entrar
                         </Button>
-                        <Form.Label class="mb-3">Não possui um cadastro?</Form.Label>
+                        
                     </Row>
+                    <a href="/register" class="text-decoration-none">Não possui um cadastro?</a>
                 </Container>
                 
                 

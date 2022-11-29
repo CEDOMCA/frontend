@@ -8,6 +8,7 @@ export default function App() {
   return (
     <Routes>
       <Route exact path="/" element={<LoginPage/>}/>
+      <Route exact path="/register" element={<HomePage/>}/>
     </Routes>
   )
 }

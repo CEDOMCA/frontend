@@ -24,7 +24,7 @@ export default function HomePage() {
                 fullName: fullName,
                 birthDate: birthDate,
                 email: email,
-                password, password,
+                password: password,
                 country: country,
                 state: state,
                 city: city,
@@ -36,7 +36,7 @@ export default function HomePage() {
             }
           };
           try {
-            let res = await axios.post("https://cedomca-backend.herokuapp.com/user", options);
+            let res = await axios.post("https://cedomca-backend.herokuapp.com/users", options);
           } catch(err) {
             console.log(err)
           }
