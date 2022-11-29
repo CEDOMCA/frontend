@@ -1,6 +1,8 @@
 import React from "react";
 import { Form, Button, Col, Row } from 'react-bootstrap';
-import { useState } from "react";
+import { Country, State, City } from "country-state-city";
+import Select from "react-select";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function HomePage() {
@@ -8,11 +10,16 @@ export default function HomePage() {
     const [birthDate, setDate] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [country, setCountry] = useState("");
-    const [state, setState] = useState("");
-    const [city, setCity] = useState("");
     const role = "visitor";
     const [message, setMessage] = useState("");
+    const [selectedCountry, setSelectedCountry] = useState(null);
+    const [selectedState, setSelectedState] = useState(null);
+    const [selectedCity, setSelectedCity] = useState(null);
+    useEffect(() => {
+        console.log(selectedCountry);
+        console.log(selectedCountry?.isoCode);
+        console.log(State?.getStatesOfCountry(selectedCountry?.isoCode));
+    }, [selectedCountry]);
 
     let handleSubmit = async (e) => {
         e.preventDefault();
@@ -24,22 +31,22 @@ export default function HomePage() {
                 fullName: fullName,
                 birthDate: birthDate,
                 email: email,
-                password, password,
-                country: country,
-                state: state,
-                city: city,
+                password: password,
+                country: selectedCountry.name,
+                state: selectedState.name,
+                city: selectedCity.name,
                 role: role
             },
             headers: {
-              "Content-Type": "application/json",
-              "Access-Control-Allow-Origin": "*"
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*"
             }
-          };
-          try {
+        };
+        try {
             let res = await axios.post("https://cedomca-backend.herokuapp.com/user", options);
-          } catch(err) {
+        } catch (err) {
             console.log(err)
-          }
+        }
     };
 
     return (
@@ -52,52 +59,76 @@ export default function HomePage() {
                             <Form.Control type="text" class="form-control" id="fullName" aria-describedby="emailHelp" value={fullName} onChange={(e) => setName(e.target.value)}></Form.Control>
                         </Form.Group>
                         <Form.Group class="mb-3">
-                            <Form.Label  class="form-label">Data de nascimento</Form.Label>
+                            <Form.Label class="form-label">Data de nascimento</Form.Label>
                             <Form.Control type="date" id="birthDate" value={birthDate} onChange={(e) => setDate(e.target.value)}></Form.Control>
                         </Form.Group>
-                        <Form.Group> 
+                        <Form.Group>
                             <Form.Label class="form-label">Estado</Form.Label>
-                            <Form.Select aria-label="Default select example" id="state" value={state} onChange={(e) => setState(e.target.value)}>
-                                <option>Open this select menu</option>
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
-                            </Form.Select>
+                            <Select
+                                options={State?.getStatesOfCountry(selectedCountry?.isoCode)}
+                                getOptionLabel={(options) => {
+                                    return options["name"];
+                                }}
+                                getOptionValue={(options) => {
+                                    return options["name"];
+                                }}
+                                value={selectedState}
+                                onChange={(item) => {
+                                    setSelectedState(item);
+                                }}
+                            />
                         </Form.Group>
-                        
+
                     </Col>
-                    <Col>                        
-                        
+                    <Col>
+
                         <Form.Group class="mb-3" controlId="exampleForm.ControlInput1">
                             <Form.Label>Email</Form.Label>
-                            <Form.Control type="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                            <Form.Control type="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
                         </Form.Group>
                         <Form.Group class="mb-3">
                             <Form.Label class="form-label">País</Form.Label>
-                            <Form.Select aria-label="Default select example" id="country" value={country} onChange={(e) => setCountry(e.target.value)}>
-                                <option>Open this select menu</option>
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
-                            </Form.Select>
+                            <Select
+                                options={Country.getAllCountries()}
+                                getOptionLabel={(options) => {
+                                    return options["name"];
+                                }}
+                                getOptionValue={(options) => {
+                                    return options["name"];
+                                }}
+                                value={selectedCountry}
+                                onChange={(item) => {
+                                    setSelectedCountry(item);
+                                }}
+                            />
                         </Form.Group>
-                        
+
                         <Form.Group class="mb-3">
                             <Form.Label class="form-label">Cidade</Form.Label>
-                            <Form.Select aria-label="Default select example" id="city" value={city} onChange={(e) => setCity(e.target.value)}>
-                                <option>Open this select menu</option>
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
-                            </Form.Select>
+                            <Select
+                                options={City.getCitiesOfState(
+                                    selectedState?.countryCode,
+                                    selectedState?.isoCode
+                                )}
+                                getOptionLabel={(options) => {
+                                    return options["name"];
+                                }}
+                                getOptionValue={(options) => {
+                                    return options["name"];
+                                }}
+                                value={selectedCity}
+                                onChange={(item) => {
+                                    setSelectedCity(item);
+                                }}
+                            />
                         </Form.Group>
                         <Form.Control type="text" class="form-control" id="role" hidden={true} value={role}></Form.Control>
                     </Col>
                 </Row>
                 <Form.Group class="mb-3">
-                            <Form.Label  class="form-label">Senha</Form.Label>
-                            <Form.Control type="password" class="form-control" id="password" value={password} onChange={(e) => setPassword(e.target.value)}></Form.Control>
-                        </Form.Group>
+                    <Form.Label class="form-label">Senha</Form.Label>
+                    <Form.Control type="password" class="form-control" id="password" value={password} onChange={(e) => setPassword(e.target.value)}></Form.Control>
+                </Form.Group>
                 <Button variant="primary" type="submit">
                     Submit
                 </Button>
