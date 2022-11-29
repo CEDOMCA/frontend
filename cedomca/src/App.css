@@ -28,6 +28,22 @@
   color: #61dafb;
 }
 
+.loginBox{
+  margin-top: 300px;
+  margin-bottom: 300px;
+  background-color: gray;
+  width: 500px;
+  height: 250px;
+}
+.loginTitle{
+  text-align: center;
+  justify-content: center;
+  padding: 20px;
+  padding-left: 220px;
+
+}
+
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
