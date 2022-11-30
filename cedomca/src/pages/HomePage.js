@@ -4,6 +4,7 @@ import { Country, State, City } from "country-state-city";
 import Select from "react-select";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import "./HomePage.css";
 
 export default function HomePage() {
     const [fullName, setName] = useState("");
@@ -24,26 +25,17 @@ export default function HomePage() {
     let handleSubmit = async (e) => {
         e.preventDefault();
         const options = {
-            method: "POST",
-            mode: "no-cors",
-            withCredentials: false,
-            body: {
-                fullName: fullName,
-                birthDate: birthDate,
-                email: email,
-                password: password,
-                country: selectedCountry.name,
-                state: selectedState.name,
-                city: selectedCity.name,
-                role: role
-            },
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*"
-            }
+            fullName: fullName,
+            birthDate: birthDate,
+            email: email,
+            password: password,
+            country: selectedCountry.name,
+            state: selectedState.name,
+            city: selectedCity.name,
+            role: role
         };
         try {
-            let res = await axios.post("https://cedomca-backend.herokuapp.com/user", options);
+            let res = await axios.post("https://cedomca-backend.herokuapp.com/users", options);
         } catch (err) {
             console.log(err)
         }
@@ -51,8 +43,9 @@ export default function HomePage() {
 
     return (
         <>
-        <link rel="stylesheet" href="src/pages/HomePage.css"></link>
+        
         <Container bsPrefix="registerContainer">
+            <h3 class="text-center">Cadastro</h3>
             <Form onSubmit={handleSubmit} class="text-white">
                 <Row>
                     <Col>
@@ -127,14 +120,21 @@ export default function HomePage() {
                         <Form.Control type="text" class="form-control" id="role" hidden={true} value={role}></Form.Control>
                     </Col>
                 </Row>
-                <Form.Group class="mb-3">
-                    <Form.Label class="form-label">Senha</Form.Label>
-                    <Form.Control type="password" class="form-control" id="password" value={password} onChange={(e) => setPassword(e.target.value)}></Form.Control>
-                </Form.Group>
-                <Button variant="primary" type="submit">
-                    Submit
-                </Button>
-                <div className="message">{message ? <p>{message}</p> : null}</div>
+                <Row id="passwordBox">
+                    <Form.Group class="mb-3">
+                        <Form.Label class="form-label">Senha</Form.Label>
+                        <Form.Control type="password" class="form-control" id="password" value={password} onChange={(e) => setPassword(e.target.value)}></Form.Control>
+                    </Form.Group>
+                    <Form.Group class="mb-3">
+                        <Form.Label class="form-label">Confirmar Senha</Form.Label>
+                        <Form.Control type="password" class="form-control" id="password" value={password} onChange={(e) => setPassword(e.target.value)}></Form.Control>
+                    </Form.Group>
+                    <Button variant="primary" type="submit" id="registerButton">
+                        Cadastre-se
+                    </Button>
+                </Row>
+                
+                <div class="message">{message ? <p>{message}</p> : null}</div>
             </Form>
         </Container>
         </>
