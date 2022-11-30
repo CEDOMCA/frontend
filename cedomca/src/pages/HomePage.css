@@ -21,3 +21,8 @@
     margin-right: auto; 
     width: 95%;
   } 
+
+  #birthDate {
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
+  }
