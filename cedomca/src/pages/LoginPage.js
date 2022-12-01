@@ -2,6 +2,7 @@ import React from "react";
 import { Form, Button, Row, Container } from 'react-bootstrap';
 import { useState } from "react";
 import axios from "axios";
+import "./LoginPage.css";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -23,7 +24,7 @@ export default function LoginPage() {
     return (
         <div>
             <Form onSubmit={handleSubmit}>
-                <Container className="loginBox">
+                <Container bsPrefix="registerContainer">
                 <p class="text-center" id="titletLogin">Login</p>
                     <Row>
                         <Form.Group class="mb-3" controlId="exampleForm.ControlInput1">
@@ -36,12 +37,12 @@ export default function LoginPage() {
                     </Row>
                     
                     <Row id="rowButton">
-                        <Button variant="primary" type="submit" >
+                        <Button variant="primary" type="submit" id="registerButton" >
                             Entrar
                         </Button>
                         
                     </Row>
-                    <a href="/register" class="text-decoration-none">Não possui um cadastro?</a>
+                    <a id="linkRegister" href="/register" class="text-decoration-none">Não possui um cadastro?</a>
                 </Container>
             </Form>
         </div>
