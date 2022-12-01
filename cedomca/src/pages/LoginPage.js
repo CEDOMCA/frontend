@@ -6,26 +6,15 @@ import axios from "axios";
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const role = "visitor";
-    const [message, setMessage] = useState("");
 
     let handleSubmit = async (e) => {
         e.preventDefault();
         const options = {
-            method: "POST",
-            mode: "no-cors",
-            withCredentials: false,
-            body: {
-                email: email,
-                password: password,
-            },
-            headers: {
-              "Content-Type": "application/json",
-              "Access-Control-Allow-Origin": "*"
-            }
+            email: email,
+            password: password,
           };
           try {
-            let res = await axios.post("https://cedomca-backend.herokuapp.com/user", options);
+            let res = await axios.post("https://cedomca-backend.herokuapp.com/auth/login", options);
           } catch(err) {
             console.log(err)
           }
@@ -33,7 +22,7 @@ export default function LoginPage() {
 
     return (
         <div>
-            <Form onSubmit={handleSubmit} method="POST">
+            <Form onSubmit={handleSubmit}>
                 <Container className="loginBox">
                 <p class="text-center" id="titletLogin">Login</p>
                     <Row>
@@ -46,7 +35,6 @@ export default function LoginPage() {
                         </Form.Group>
                     </Row>
                     
-                    <Form.Control type="text" class="form-control" id="role" hidden={true} value={role} readOnly={true}></Form.Control>
                     <Row id="rowButton">
                         <Button variant="primary" type="submit" >
                             Entrar
@@ -55,9 +43,6 @@ export default function LoginPage() {
                     </Row>
                     <a href="/register" class="text-decoration-none">Não possui um cadastro?</a>
                 </Container>
-                
-                
-                <div className="message">{message ? <p>{message}</p> : null}</div>
             </Form>
         </div>
     );
