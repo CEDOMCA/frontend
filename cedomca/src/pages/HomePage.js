@@ -7,11 +7,6 @@ import axios from "axios";
 import "./HomePage.css";
 
 export default function HomePage() {
-    const [fullName, setName] = useState("");
-    const [birthDate, setDate] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
     const role = "visitor";
     const [message, setMessage] = useState("");
     const [selectedCountry, setSelectedCountry] = useState(null);
@@ -68,10 +63,10 @@ export default function HomePage() {
         setErrors(newErrors)
         } else {
             const options = {
-                fullName: fullName,
-                birthDate: birthDate,
-                email: email,
-                password: password,
+                fullName: form.name,
+                birthDate: form.birthDate,
+                email: form.email,
+                password: form.password,
                 country: selectedCountry.name,
                 state: selectedState.name,
                 city: selectedCity.name,
