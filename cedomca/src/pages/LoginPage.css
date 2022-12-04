@@ -1,0 +1,22 @@
+.registerContainer {
+    margin-top: 5%;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto; 
+    padding: 2%;
+    background-color: #212529;
+    color: white;
+    border-radius: 50px;
+  }
+
+  #registerButton{
+    margin-top: 3%;
+    margin-left: auto;
+    margin-right: auto; 
+    margin-bottom: 1%;
+    width: 95%;
+  }
+
+  #linkRegister {
+    margin-left: 6px;
+  }
