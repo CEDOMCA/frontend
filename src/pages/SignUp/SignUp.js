@@ -4,9 +4,9 @@ import { Country, State, City } from "country-state-city";
 import Select from "react-select";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import "./HomePage.css";
+import "./SignUp.css";
 
-export default function HomePage() {
+export default function SignUp() {
     const role = "visitor";
     const [message, setMessage] = useState("");
     const [selectedCountry, setSelectedCountry] = useState(null);
