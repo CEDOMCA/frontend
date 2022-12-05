@@ -42,7 +42,7 @@ export default function SignIn() {
                         </Button>
                         
                     </Row>
-                    <a id="linkRegister" href="/register" class="text-decoration-none">Não possui um cadastro?</a>
+                    <a id="linkRegister" href="/signup" class="text-decoration-none">Não possui um cadastro?</a>
                 </Container>
             </Form>
         </div>
