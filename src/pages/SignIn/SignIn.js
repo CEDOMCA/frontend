@@ -2,9 +2,9 @@ import React from "react";
 import { Form, Button, Row, Container } from 'react-bootstrap';
 import { useState } from "react";
 import axios from "axios";
-import "./LoginPage.css";
+import "./SignIn.css";
 
-export default function LoginPage() {
+export default function SignIn() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
