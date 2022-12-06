@@ -16,6 +16,18 @@ export default function SignUp() {
     const [ errors, setErrors ] = useState({})
     const [show, setShow] = useState(false);
 
+    const customStyles = {
+        option: (provided, state) => ({
+          ...provided,
+          color: state.isSelected ? 'white' : 'black',
+          backgroundColor: state.isSelected ? '#2684FF' : 'white'
+        }),
+        control: (provided) => ({
+          ...provided,
+        })
+      }
+      
+
     const setField = (field, value) => {
         setForm({
           ...form,
@@ -127,15 +139,7 @@ export default function SignUp() {
                                 onChange={(item) => {
                                     setSelectedState(item);
                                 }}
-                                theme={(theme) => ({
-                                    ...theme,
-                                    borderRadius: 0,
-                                    colors: {
-                                      ...theme.colors,
-                                      primary25: 'primary50',
-                                      primary: 'black',
-                                    },
-                                  })}
+                                styles={customStyles}
                             />
                         </Form.Group>
 
@@ -150,7 +154,7 @@ export default function SignUp() {
                             </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group class="mb-3">
-                            <Form.Label class="form-label">País</Form.Label>
+                            <Form.Label className="basic-single" classNamePrefix="select">País</Form.Label>
                             <Select
                                 options={Country.getAllCountries()}
                                 getOptionLabel={(options) => {
@@ -163,6 +167,7 @@ export default function SignUp() {
                                 onChange={(item) => {
                                     setSelectedCountry(item);
                                 }}
+                                styles={customStyles}
                             />
                         </Form.Group>
 
@@ -183,6 +188,7 @@ export default function SignUp() {
                                 onChange={(item) => {
                                     setSelectedCity(item);
                                 }}
+                                styles={customStyles}
                             />
                         </Form.Group>
                         <Form.Control type="text" class="form-control" id="role" hidden={true} value={role}></Form.Control>
