@@ -77,6 +77,7 @@ export default function SignUp() {
             try {
                 
                 let res = await axios.post("https://web-production-8fea.up.railway.app/users", options);
+                window.location.href = "/";
                 
             } catch (err) {
                 setShow(true);
