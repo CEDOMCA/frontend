@@ -1,4 +1,4 @@
-import { Form, Button, Col, Row, Container } from 'react-bootstrap';
+import { Form, Button, Col, Row, Container, Alert } from 'react-bootstrap';
 import React, { CSSProperties } from 'react';
 import { Country, State, City } from "country-state-city";
 import Select from "react-select";
@@ -14,6 +14,7 @@ export default function SignUp() {
     const [selectedCity, setSelectedCity] = useState(null);
     const [ form, setForm ] = useState({})
     const [ errors, setErrors ] = useState({})
+    const [show, setShow] = useState(false);
 
     const setField = (field, value) => {
         setForm({
@@ -36,6 +37,7 @@ export default function SignUp() {
         if ( !birthDate || birthDate === '' ) newErrors.birthDate = 'Data de nascimento obrigatório'
         // rating errors
         if ( !email || email === '' ) newErrors.email = 'Email obrigatório'
+        else if( !email.includes('@')) newErrors.email = 'Email inválido'
         // comment errors
         if ( !password || password === '' ) newErrors.password = 'Senha obrigatório'
         else if ( password.length > 18 ) newErrors.password = 'Senha muito longa! Sua senha deve conter entre 8 e 18 caracteres'
@@ -74,10 +76,16 @@ export default function SignUp() {
             };
             try {
                 
-                let res = await axios.post("https://cedomca-backend.herokuapp.com/users", options);
+                let res = await axios.post("https://web-production-8fea.up.railway.app/users", options);
                 
             } catch (err) {
-                console.log(err)
+                setShow(true);
+                let errorMsg = err.response.data.message.toString();
+                let newErrorMsg = errorMsg.replace(",","\n\n")
+                setMessage(newErrorMsg);
+                setTimeout(function(){
+                   setShow(false);
+                }, 7000);
             }
         }
     };
@@ -135,7 +143,7 @@ export default function SignUp() {
 
                         <Form.Group class="mb-3" controlId="exampleForm.ControlInput1">
                             <Form.Label>Email</Form.Label>
-                            <Form.Control type="email" placeholder="name@example.com" onChange={(e) => setField('email',e.target.value)} isInvalid={ !!errors.email }/>
+                            <Form.Control type="text" placeholder="name@example.com" onChange={(e) => setField('email',e.target.value)} isInvalid={ !!errors.email }/>
                             <Form.Control.Feedback type='invalid'>
                                 { errors.email }
                             </Form.Control.Feedback>
@@ -193,11 +201,13 @@ export default function SignUp() {
                         <Form.Control.Feedback type='invalid'>
                             { errors.confirmPassword }
                         </Form.Control.Feedback>
-                        <div class="message">{message ? <p>{message}</p> : null}</div>
                     </Form.Group>
                     <Button variant="primary" type="submit" id="registerButton">
                         Cadastre-se
                     </Button>
+                    <Alert show={show} variant="danger" id="alertMsg">
+                        <p>{message}</p>
+                    </Alert>
                 </Row>
             </Form>
         </Container>
