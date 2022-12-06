@@ -15,7 +15,8 @@ export default function SignIn() {
             password: password,
           };
           try {
-            let res = await axios.post("https://cedomca-backend.herokuapp.com/auth/login", options);
+            let res = await axios.post("https://web-production-8fea.up.railway.app/auth/login", options);
+            window.location.href = "/home";
           } catch(err) {
             console.log(err)
           }
