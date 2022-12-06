@@ -9,17 +9,33 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import Alert from '@mui/material/Alert';
 
 const theme = createTheme();
 
 export default function SignIn() {
-  const handleSubmit = (event) => {
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [error, setError] = React.useState('');
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    
+    try {
+      const response = await axios.post('https://web-production-8fea.up.railway.app/auth/login', {
+        email,
+        password
+      });
+      navigate('/main', { replace: true })
+    } catch(err) {
+      if (err.response.data.message) {
+        setError(err.response.data.message);
+      }
+    }
   };
 
   return (
@@ -50,6 +66,11 @@ export default function SignIn() {
               name="email"
               autoComplete="email"
               autoFocus
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError('');
+              } }
             />
             <TextField
               margin="normal"
@@ -60,7 +81,15 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError('');
+              } }
             />
+            {
+              error ? <Alert severity="warning">{error}</Alert> : null
+            }
             <Button
               type="submit"
               fullWidth
@@ -70,7 +99,7 @@ export default function SignIn() {
               Entrar
             </Button>
             <Link href="/signup" variant="body2">
-                {"Não tem uma conta? Cadastre-se"}
+              Não tem uma conta? Cadastre-se
             </Link>
           </Box>
         </Box>

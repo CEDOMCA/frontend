@@ -16,11 +16,13 @@ import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { useState } from 'react';
+import { Country } from 'country-state-city';
 
 const theme = createTheme();
 
 export default function SignUpTest() {
-    const [birthdate, setBirthDate] = useState('');
+  const [birthdate, setBirthDate] = useState('');
+  const [country, setCountry] = useState('');
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -33,7 +35,7 @@ export default function SignUpTest() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
+      <Container component="main" maxWidth="sm">
         <CssBaseline />
         <Box
           sx={{
@@ -50,8 +52,8 @@ export default function SignUpTest() {
             Cadastre sua conta
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+            <Grid container spacing={2} columns = {12}>
+              <Grid item xs={12}>
                 <TextField
                   autoComplete="given-name"
                   name="fullName"
@@ -62,7 +64,7 @@ export default function SignUpTest() {
                   autoFocus
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <TextField
                   required
                   fullWidth
@@ -84,38 +86,41 @@ export default function SignUpTest() {
               </Grid> */}
               <Grid item xs={12} sm={6}>
                 <Select
-                    labelId="country"
-                    id="country"
-                    value={10}
-                    label="country"
+                  labelId="country"
+                  id="country"
+                  value={country.isoCode}
+                  label="country"
+                  onChange={(event) => {setCountry(Country.getCountryByCode(event.target.value))}}
                 >
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
+                  {
+                    Country.getAllCountries().map((country) => {
+                      return <MenuItem value={country.isoCode}>{country.name}</MenuItem>
+                    })
+                  }
                 </Select>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Select
-                    labelId="state"
-                    id="state"
-                    value={10}
-                    label="state"
+                  labelId="state"
+                  id="state"
+                  value={10}
+                  label="state"
                 >
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
+                  <MenuItem value={10}>Ten</MenuItem>
+                  <MenuItem value={20}>Twenty</MenuItem>
+                  <MenuItem value={30}>Thirty</MenuItem>
                 </Select>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Select
-                    labelId="city"
-                    id="city"
-                    value={10}
-                    label="city"
+                  labelId="city"
+                  id="city"
+                  value={10}
+                  label="city"
                 >
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
+                  <MenuItem value={10}>Ten</MenuItem>
+                  <MenuItem value={20}>Twenty</MenuItem>
+                  <MenuItem value={30}>Thirty</MenuItem>
                 </Select>
               </Grid>
               <Grid item xs={12}>
