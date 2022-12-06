@@ -206,6 +206,7 @@ export default function SignUp() {
                     <Button variant="primary" type="submit" id="registerButton">
                         Cadastre-se
                     </Button>
+                    <a id="linkLogin" href="/" class="text-decoration-none">Já possui um cadastro? Então faça login! </a>
                     <Alert show={show} variant="danger" id="alertMsg">
                         <p>{message}</p>
                     </Alert>
