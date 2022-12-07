@@ -12,6 +12,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const theme = createTheme();
 
@@ -19,6 +21,7 @@ export default function SignIn() {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [error, setError] = React.useState('');
+  const [open, setOpen] = React.useState(false);
 
   const navigate = useNavigate();
 
@@ -26,15 +29,18 @@ export default function SignIn() {
     event.preventDefault();
     
     try {
+      setOpen(true);
       const response = await axios.post('https://web-production-8fea.up.railway.app/auth/login', {
         email,
         password
       });
+      setOpen(false);
       navigate('/main', { replace: true })
     } catch(err) {
       if (err.response.data.message) {
         setError(err.response.data.message);
       }
+      setOpen(false);
     }
   };
 
@@ -98,6 +104,12 @@ export default function SignIn() {
             >
               Entrar
             </Button>
+            <Backdrop
+              sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+              open={open}
+            >
+              <CircularProgress color="inherit" />
+            </Backdrop>
             <Link href="/signup" variant="body2">
               Não tem uma conta? Cadastre-se
             </Link>
