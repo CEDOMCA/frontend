@@ -12,17 +12,23 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import dayjs from 'dayjs';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useState } from 'react';
-import { Country } from 'country-state-city';
+import GeoLocation from "./GeoLocation";
 
 const theme = createTheme();
 
 export default function SignUpTest() {
   const [birthdate, setBirthDate] = useState('');
-  const [country, setCountry] = useState('');
+  const [country, setCountry] = useState("");
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
+  const [date, setDate] = React.useState(dayjs('2000-08-18T21:11:54'));
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -73,55 +79,38 @@ export default function SignUpTest() {
                   name="email"
                 />
               </Grid>
-              {/* <Grid item xs={12}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <DesktopDatePicker
-                        label="Date desktop"
-                        inputFormat="MM/DD/YYYY"
-                        value={birthdate}
-                        onChange={(newBirthDate) => setBirthDate(newBirthDate)}
-                        renderInput={(params) => <TextField {...params} />}
-                        />
+              <Grid item xs={12}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DesktopDatePicker
+                      required
+                      label="Data de nascimento *"
+                      inputFormat="MM/DD/YYYY"
+                      value={date}
+                      onChange={(event) => {setDate(event)}}
+                      renderInput={(params) => <TextField {...params} />}
+                    />
                 </LocalizationProvider>
-              </Grid> */}
-              <Grid item xs={12} sm={6}>
-                <Select
-                  labelId="country"
-                  id="country"
-                  value={country.isoCode}
-                  label="country"
-                  onChange={(event) => {setCountry(Country.getCountryByCode(event.target.value))}}
-                >
-                  {
-                    Country.getAllCountries().map((country) => {
-                      return <MenuItem value={country.isoCode}>{country.name}</MenuItem>
-                    })
-                  }
-                </Select>
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <Select
-                  labelId="state"
-                  id="state"
-                  value={10}
-                  label="state"
-                >
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
-                </Select>
+              <Grid item xs={4} >
+                <GeoLocation
+                  locationTitle="País"
+                  isCountry
+                  onChange={setCountry}
+                />
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <Select
-                  labelId="city"
-                  id="city"
-                  value={10}
-                  label="city"
-                >
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
-                </Select>
+              <Grid item xs={4} >
+                <GeoLocation
+                  locationTitle="Estado"
+                  onChange={setState}
+                  geoId={country}
+                />
+              </Grid>
+              <Grid item xs={4} >
+                <GeoLocation
+                  locationTitle="Cidade"
+                  onChange={setCity}
+                  geoId={state}
+                />
               </Grid>
               <Grid item xs={12}>
                 <TextField
