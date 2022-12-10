@@ -137,6 +137,9 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             Cadastre sua conta
           </Typography>
+          <Collapse in={show}>
+              <Alert severity="error"><p>{message}</p></Alert>
+            </Collapse>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2} columns = {12}>
               <Grid item xs={12}>
@@ -177,11 +180,12 @@ export default function SignUp() {
               </Grid>
               <Grid item xs={4} >
               <FormControl>
-                  <InputLabel  id="demo-simple-select-outlined-label">País</InputLabel>
+                  <InputLabel id="demo-simple-select-label">País</InputLabel>
                   <Select
                     sx={{ width: 170 }}
                     labelId="demo-simple-select-outlined-label"
                     id="demo-simple-select-outlined"
+                    label="País"
                     value={country}
                     onChange={(e) => setCountry(e.target.value)}
                   >
@@ -198,11 +202,12 @@ export default function SignUp() {
               </Grid>
               <Grid item xs={4} >
                 <FormControl>
-                  <InputLabel id="demo-simple-select-outlined-label">Estado</InputLabel>
+                  <InputLabel id="demo-simple-select-label">Estado</InputLabel>
                   <Select
                     sx={{ width: 170 }}
                     labelId="demo-simple-select-outlined-label"
                     id="demo-simple-select-outlined"
+                    label = "Estado"
                     value={state}
                     onChange={(e) => setState(e.target.value)}
                   >
@@ -219,11 +224,12 @@ export default function SignUp() {
               </Grid>
               <Grid item xs={4} >
                 <FormControl>
-                  <InputLabel id="demo-simple-select-outlined-label">Cidade</InputLabel>
+                  <InputLabel id="select">Cidade</InputLabel>
                   <Select
                     sx={{ width: 170 }}
                     labelId="demo-simple-select-outlined-label"
                     id="demo-simple-select-outlined"
+                    label="Cidade"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                   >
@@ -272,9 +278,6 @@ export default function SignUp() {
             >
               Cadastrar-se
             </Button>
-            <Collapse in={show}>
-              <Alert severity="error"><p>{message}</p></Alert>
-            </Collapse>
             <Backdrop
               sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
               open={open}
