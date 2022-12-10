@@ -12,9 +12,10 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Divider from '@mui/material/Divider';
 import ListItemText from '@mui/material/ListItemText';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import Avatar from '@mui/material/Avatar';
 import AddIcon from '@mui/icons-material/Add';
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 
 export default function Fonts() {
@@ -63,10 +64,22 @@ export default function Fonts() {
       <Typography sx={{ my: 5, mx: 2 }} color="text.secondary" align="center" hidden>
         Não existe fontes registradas no momento.
       </Typography>
-      <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-      <ListItem alignItems="flex-start">
+      <List alignItems="center" sx={{ width: '100%', bgcolor: 'background.paper' }}>
+      <ListItem alignItems="center" secondaryAction={
+                  <Grid container
+                  direction="column"
+                  justifyContent="center"
+                  alignItems="flex-start">
+                    <Button size="small" variant="text" startIcon={<DeleteIcon />} color="error">
+                    Excluir fonte
+                    </Button>
+                    <Button size="small" variant="text" startIcon={<EditIcon />} >
+                    Editar fonte
+                    </Button>
+                  </Grid>  
+                  }>
         <ListItemText
-          primary="Brunch this weekend?"
+          primary="Fonte institucional"
           secondary={
             <React.Fragment>
               <Typography
@@ -75,17 +88,29 @@ export default function Fonts() {
                 variant="body2"
                 color="text.primary"
               >
-                Ali Connors
+                Descrição:
               </Typography>
-              {" — I'll be in your neighborhood doing errands this…"}
+              {" .............."}
             </React.Fragment>
           }
         />
       </ListItem>
       <Divider variant="inset" component="li" />
-      <ListItem alignItems="flex-start">
+      <ListItem alignItems="center" secondaryAction={
+                  <Grid container
+                  direction="column"
+                  justifyContent="center"
+                  alignItems="flex-start">
+                    <Button size="small" variant="text" startIcon={<DeleteIcon />} color="error">
+                    Excluir fonte
+                    </Button>
+                    <Button size="small" variant="text" startIcon={<EditIcon />} >
+                    Editar fonte
+                    </Button>
+                  </Grid> 
+                  }>
         <ListItemText
-          primary="Summer BBQ"
+          primary="Fonte bibliográfica"
           secondary={
             <React.Fragment>
               <Typography
@@ -94,17 +119,31 @@ export default function Fonts() {
                 variant="body2"
                 color="text.primary"
               >
-                to Scott, Alex, Jennifer
+                Descrição:
               </Typography>
-              {" — Wish I could come, but I'm out of town this…"}
+              {" .............."}
             </React.Fragment>
           }
         />
       </ListItem>
       <Divider variant="inset" component="li" />
-      <ListItem alignItems="flex-start">
+      <ListItem alignItems="center" secondaryAction={
+                  <Grid container
+                  direction="column"
+                  justifyContent="center"
+                  alignItems="flex-start"
+                  spacing={1}>
+                    <Button size="small" variant="text" startIcon={<DeleteIcon />} color="error">
+                    Excluir fonte
+                    </Button>
+                    <Button size="small" variant="text" startIcon={<EditIcon />} >
+                    Editar fonte
+                    </Button>
+                  </Grid>
+                    
+                  }>
         <ListItemText
-          primary="Oui Oui"
+          primary="Fonte musical escrita"
           secondary={
             <React.Fragment>
               <Typography
@@ -113,9 +152,9 @@ export default function Fonts() {
                 variant="body2"
                 color="text.primary"
               >
-                Sandra Adams
+                Descrição
               </Typography>
-              {' — Do you have Paris recommendations? Have you ever…'}
+              {' ..............'}
             </React.Fragment>
           }
         />
