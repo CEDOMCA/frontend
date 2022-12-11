@@ -22,6 +22,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import FormControl from '@mui/material/FormControl';
+import Box from '@mui/material/Box';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -182,17 +185,44 @@ export default function Fonts() {
     </List>
         <Dialog
           open={open}
+          fullWidth
+          maxWidth={"md"}
           TransitionComponent={Transition}
           keepMounted
           onClose={handleClose}
           aria-describedby="alert-dialog-slide-description"
         >
-          <DialogTitle>{"Use Google's location service?"}</DialogTitle>
+          <DialogTitle>
+            <Grid container
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center">
+              <Button onClick={handleClose}>
+                      <KeyboardArrowLeft />
+                    Back
+              </Button> 
+              {"Cadastrar nova fonte"}
+              <Button variant="contained" onClick={handleClose}>
+                    Cadastrar
+              </Button> 
+            </Grid>
+          </DialogTitle>
           <DialogContent>
-            <DialogContentText id="alert-dialog-slide-description">
-              Let Google help apps determine location. This means sending anonymous
-              location data to Google, even when no apps are running.
-            </DialogContentText>
+          <Box
+            noValidate
+            component="form"
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              m: 'auto',
+              width: 'fit-content',
+            }}
+          >
+            <FormControl sx={{ mt: 2, minWidth: 120 }}>
+              
+            </FormControl>
+            
+          </Box>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Disagree</Button>
