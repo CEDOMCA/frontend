@@ -16,9 +16,28 @@ import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
 
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 export default function Fonts() {
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
     return(
         <Paper sx={{ maxWidth: 980, margin: 'auto', marginTop: 5, overflow: 'hidden' }}>
       <AppBar
@@ -36,6 +55,7 @@ export default function Fonts() {
                 disabled={false}
                 size="medium"
                 variant="contained"
+                onClick={handleClickOpen}
             >
                 Adicionar nova fonte
             </Button>
@@ -95,7 +115,7 @@ export default function Fonts() {
           }
         />
       </ListItem>
-      <Divider variant="inset" component="li" />
+      <Divider component="li" />
       <ListItem alignItems="center" secondaryAction={
                   <Grid container
                   direction="column"
@@ -126,7 +146,7 @@ export default function Fonts() {
           }
         />
       </ListItem>
-      <Divider variant="inset" component="li" />
+      <Divider component="li" />
       <ListItem alignItems="center" secondaryAction={
                   <Grid container
                   direction="column"
@@ -160,7 +180,25 @@ export default function Fonts() {
         />
       </ListItem>
     </List>
-
+        <Dialog
+          open={open}
+          TransitionComponent={Transition}
+          keepMounted
+          onClose={handleClose}
+          aria-describedby="alert-dialog-slide-description"
+        >
+          <DialogTitle>{"Use Google's location service?"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-slide-description">
+              Let Google help apps determine location. This means sending anonymous
+              location data to Google, even when no apps are running.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Disagree</Button>
+            <Button onClick={handleClose}>Agree</Button>
+          </DialogActions>
+        </Dialog>
     </Paper>
     );
 }
