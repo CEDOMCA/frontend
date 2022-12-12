@@ -34,22 +34,10 @@ import Slide from '@mui/material/Slide';
 const pages = ['Obras', 'Fontes', 'Usuários'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
-function ResponsiveAppBar() {
+function AdminUsers() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [open, setOpen] = React.useState(false);
-
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
   
   const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -68,53 +56,13 @@ function ResponsiveAppBar() {
 
   return (
     <div>
-<AppBar position="static">
+    <AppBar position="static">
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
-
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: 'block', md: 'none' },
-              }}
-            >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-          
+        <Toolbar disableGutters>          
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
                 {page}
@@ -122,33 +70,9 @@ function ResponsiveAppBar() {
             ))}
           </Box>
           <Box sx={{ flexGrow: 0 }}>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-
-            </Menu>
           </Box>
         </Toolbar>
       </Container>
-      
     </AppBar>
     <Paper sx={{ maxWidth: 980, margin: 'auto', marginTop: 5, overflow: 'hidden' }}>
       <AppBar
@@ -178,22 +102,22 @@ function ResponsiveAppBar() {
         </Toolbar>
       </AppBar>
       <Typography sx={{ my: 5, mx: 2 }} color="text.secondary" align="center" hidden>
-        Não existe fontes registradas no momento.
+        Não existem usuários registradas no momento.
       </Typography>
       <List alignItems="center" sx={{ width: '100%', bgcolor: 'background.paper' }}>
       <ListItem alignItems="center" secondaryAction={
-                  <Grid container
-                  direction="column"
-                  justifyContent="center"
-                  alignItems="flex-start">
-                    <Button size="small" variant="text" startIcon={<DeleteIcon />} color="error">
-                    Excluir usuário
-                    </Button>
-                    <Button size="small" variant="text" startIcon={<EditIcon />} >
-                    Editar usuário
-                    </Button>
-                  </Grid>  
-                  }>
+          <Grid container
+          direction="column"
+          justifyContent="center"
+          alignItems="flex-start">
+            <Button size="small" variant="text" startIcon={<DeleteIcon />} color="error">
+            Excluir usuário
+            </Button>
+            <Button size="small" variant="text" startIcon={<EditIcon />} >
+            Editar usuário
+            </Button>
+          </Grid>  
+          }>
         <ListItemText
           primary="Nome:"
           secondary={
@@ -302,4 +226,4 @@ function ResponsiveAppBar() {
     
   );
 }
-export default ResponsiveAppBar;
+export default AdminUsers;
