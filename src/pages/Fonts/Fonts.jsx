@@ -25,6 +25,11 @@ import Slide from '@mui/material/Slide';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import FormControl from '@mui/material/FormControl';
 import Box from '@mui/material/Box';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import InputLabel from '@mui/material/InputLabel';
+import Fab from '@mui/material/Fab';
+import { width } from '@mui/system';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -186,7 +191,7 @@ export default function Fonts() {
         <Dialog
           open={open}
           fullWidth
-          maxWidth={"md"}
+          maxWidth={"lg"}
           TransitionComponent={Transition}
           keepMounted
           onClose={handleClose}
@@ -215,12 +220,72 @@ export default function Fonts() {
               display: 'flex',
               flexDirection: 'column',
               m: 'auto',
-              width: 'fit-content',
+              width: 'auto',
             }}
           >
-            <FormControl sx={{ mt: 2, minWidth: 120 }}>
-              
-            </FormControl>
+            <Grid container alignItems="center" justifyContent="center" spacing={2} columns = {12} sx={{ mt: 2 }}>
+            <Grid item xs={6.5}>
+                <TextField
+                  autoComplete="given-name"
+                  name="name"
+                  required
+                  fullWidth
+                  id="name"
+                  label="Nome"
+                  autoFocus
+                />
+              </Grid>
+              <Grid item xs={6.5}>
+                <TextField
+                  required
+                  fullWidth
+                  id="description"
+                  label="Descrição"
+                  name="description"
+                />
+              </Grid>
+
+              <Grid item xs={11} sx={{mt: 4}}>
+                  <Grid container
+                    spacing={2}
+                    direction="row"
+                    justifyContent="center"
+                    alignItems="center">
+                    <TextField
+                      required
+                      id="charName"
+                      label="Nome da característica"
+                      name="charName"
+                      sx = {{width: '40%', mr: 2}}
+                    />
+
+                    <FormControl>
+                      <InputLabel id="demo-simple-select-label">Possíveis Valores</InputLabel>
+                      <Select
+                        sx = {{width: 300}}
+                        labelId="demo-simple-select-outlined-label"
+                        id="demo-simple-select-outlined"
+                        label="Possíveis Valores"
+                      >
+                        <MenuItem value="">
+                          Apenas números
+                        </MenuItem>
+                        <MenuItem value="">Apenas letras</MenuItem>
+                        <MenuItem value="">Apenas letras e números</MenuItem>
+                      </Select>
+                    </FormControl>
+                </Grid>
+                  <Grid container
+                    direction="row"
+                    justifyContent="flex-start"
+                    alignItems="center">
+                <Fab color="primary" aria-label="add" sx={{ml: 18, mt: 2}}>
+                    <AddIcon /> 
+                  </Fab> <Typography sx={{ml:2, mt:2}}>Adicionar nova característica</Typography>
+                </Grid>
+                  
+              </Grid>
+            </Grid>
             
           </Box>
           </DialogContent>
