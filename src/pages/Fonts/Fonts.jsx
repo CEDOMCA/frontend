@@ -30,6 +30,8 @@ import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import Fab from '@mui/material/Fab';
 import { width } from '@mui/system';
+import { useState, useEffect } from "react";
+import axios from 'axios';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -37,6 +39,35 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function Fonts() {
   const [open, setOpen] = React.useState(false);
+  const [counter, setCounter] = useState(1);
+  const [fonts, setFonts] = useState([]);
+  const [hidden, setHidden] = useState(false);
+
+  const fetchProducts = async () => {
+    try {
+    axios.defaults.withCredentials = true
+    const { data } = await axios.get("https://web-production-8fea.up.railway.app/fonts");
+    const fonts = data;
+    setFonts(fonts);
+    console.log(data);
+    if (fonts.len === 0) {
+      setHidden(false);
+    } else {
+      setHidden(true);
+    }
+    } catch (err) {
+      setHidden(false);
+    }
+    
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const handleClick = () => {
+    setCounter(counter + 1);
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -44,7 +75,43 @@ export default function Fonts() {
 
   const handleClose = () => {
     setOpen(false);
+    setCounter(1);
   };
+
+  const renderNewChar = () => {
+    return(
+      <Grid container
+                    spacing={2}
+                    direction="row"
+                    justifyContent="center"
+                    alignItems="center"
+                    sx={{mt: 2}}>
+                    <TextField
+                      required
+                      id="charName"
+                      label="Nome da característica"
+                      name="charName"
+                      sx = {{width: '40%', mr: 2}}
+                    />
+
+                    <FormControl>
+                      <InputLabel id="demo-simple-select-label">Possíveis Valores</InputLabel>
+                      <Select
+                        sx = {{width: 300}}
+                        labelId="demo-simple-select-outlined-label"
+                        id="demo-simple-select-outlined"
+                        label="Possíveis Valores"
+                      >
+                        <MenuItem value="">
+                          Apenas números
+                        </MenuItem>
+                        <MenuItem value="">Apenas letras</MenuItem>
+                        <MenuItem value="">Apenas letras e números</MenuItem>
+                      </Select>
+                    </FormControl>
+                </Grid>
+    );
+  }
 
     return(
         <Paper sx={{ maxWidth: 980, margin: 'auto', marginTop: 5, overflow: 'hidden' }}>
@@ -89,11 +156,13 @@ export default function Fonts() {
           </Grid>
         </Toolbar>
       </AppBar>
-      <Typography sx={{ my: 5, mx: 2 }} color="text.secondary" align="center" hidden>
+      <Typography sx={{ my: 5, mx: 2 }} color="text.secondary" align="center" hidden={hidden}>
         Não existe fontes registradas no momento.
       </Typography>
       <List alignItems="center" sx={{ width: '100%', bgcolor: 'background.paper' }}>
-      <ListItem alignItems="center" secondaryAction={
+      {fonts.map((fonts) => (
+        <>
+        <ListItem alignItems="center" secondaryAction={
                   <Grid container
                   direction="column"
                   justifyContent="center"
@@ -107,7 +176,7 @@ export default function Fonts() {
                   </Grid>  
                   }>
         <ListItemText
-          primary="Fonte institucional"
+          primary={fonts.name}
           secondary={
             <React.Fragment>
               <Typography
@@ -118,75 +187,15 @@ export default function Fonts() {
               >
                 Descrição:
               </Typography>
-              {" .............."}
+              {fonts.description}
             </React.Fragment>
           }
         />
       </ListItem>
       <Divider component="li" />
-      <ListItem alignItems="center" secondaryAction={
-                  <Grid container
-                  direction="column"
-                  justifyContent="center"
-                  alignItems="flex-start">
-                    <Button size="small" variant="text" startIcon={<DeleteIcon />} color="error">
-                    Excluir fonte
-                    </Button>
-                    <Button size="small" variant="text" startIcon={<EditIcon />} >
-                    Editar fonte
-                    </Button>
-                  </Grid> 
-                  }>
-        <ListItemText
-          primary="Fonte bibliográfica"
-          secondary={
-            <React.Fragment>
-              <Typography
-                sx={{ display: 'inline' }}
-                component="span"
-                variant="body2"
-                color="text.primary"
-              >
-                Descrição:
-              </Typography>
-              {" .............."}
-            </React.Fragment>
-          }
-        />
-      </ListItem>
-      <Divider component="li" />
-      <ListItem alignItems="center" secondaryAction={
-                  <Grid container
-                  direction="column"
-                  justifyContent="center"
-                  alignItems="flex-start"
-                  spacing={1}>
-                    <Button size="small" variant="text" startIcon={<DeleteIcon />} color="error">
-                    Excluir fonte
-                    </Button>
-                    <Button size="small" variant="text" startIcon={<EditIcon />} >
-                    Editar fonte
-                    </Button>
-                  </Grid>
-                    
-                  }>
-        <ListItemText
-          primary="Fonte musical escrita"
-          secondary={
-            <React.Fragment>
-              <Typography
-                sx={{ display: 'inline' }}
-                component="span"
-                variant="body2"
-                color="text.primary"
-              >
-                Descrição
-              </Typography>
-              {' ..............'}
-            </React.Fragment>
-          }
-        />
-      </ListItem>
+      </>
+      ))}
+      
     </List>
         <Dialog
           open={open}
@@ -245,41 +254,15 @@ export default function Fonts() {
                 />
               </Grid>
 
-              <Grid item xs={11} sx={{mt: 4}}>
-                  <Grid container
-                    spacing={2}
-                    direction="row"
-                    justifyContent="center"
-                    alignItems="center">
-                    <TextField
-                      required
-                      id="charName"
-                      label="Nome da característica"
-                      name="charName"
-                      sx = {{width: '40%', mr: 2}}
-                    />
-
-                    <FormControl>
-                      <InputLabel id="demo-simple-select-label">Possíveis Valores</InputLabel>
-                      <Select
-                        sx = {{width: 300}}
-                        labelId="demo-simple-select-outlined-label"
-                        id="demo-simple-select-outlined"
-                        label="Possíveis Valores"
-                      >
-                        <MenuItem value="">
-                          Apenas números
-                        </MenuItem>
-                        <MenuItem value="">Apenas letras</MenuItem>
-                        <MenuItem value="">Apenas letras e números</MenuItem>
-                      </Select>
-                    </FormControl>
-                </Grid>
+              <Grid item xs={11} sx={{mt: 2}}>
+                  {Array.from(Array(counter)).map((c, index) => {
+                    return renderNewChar();
+                  })}
                   <Grid container
                     direction="row"
                     justifyContent="flex-start"
                     alignItems="center">
-                <Fab color="primary" aria-label="add" sx={{ml: 18, mt: 2}}>
+                <Fab color="primary" aria-label="add" sx={{ml: 18, mt: 2}} onClick={handleClick}>
                     <AddIcon /> 
                   </Fab> <Typography sx={{ml:2, mt:2}}>Adicionar nova característica</Typography>
                 </Grid>
