@@ -2,8 +2,7 @@
   "name": "cedomca",
   "version": "0.1.0",
   "private": true,
-  "homepage": "./",
-  "proxy": "https://cedomca-backend.herokuapp.com",
+  "homepage": "https://cedomca.github.io/frontend/",
   "dependencies": {
     "-": "^0.0.1",
     "@emotion/react": "^11.10.5",
