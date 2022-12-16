@@ -23,9 +23,9 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
-import axios from 'axios';
 import { Country, State, City } from 'country-state-city';
 import { useNavigate } from 'react-router-dom';
+import { createUser } from '../../services/api';
 
 const theme = createTheme();
 
@@ -67,7 +67,7 @@ export default function SignUp() {
     if (!name || name === '') newErrors.name = 'Nome obrigatório';
     // rating errors
     if (!email || email === '') newErrors.email = 'Email obrigatório';
-    else if( !email.includes('@')) newErrors.email = 'Email inválido'
+    else if (!email.includes('@')) newErrors.email = 'Email inválido'
     // comment errors
     if (!password || password === '') newErrors.password = 'Senha obrigatório';
     else if (password.length > 18) newErrors.password = 'Senha muito longa! Sua senha deve conter entre 8 e 18 caracteres';
@@ -101,8 +101,7 @@ export default function SignUp() {
         role,
       };
       try {
-        
-        const res = await axios.post('https://web-production-8fea.up.railway.app/users', options);
+        await createUser(options);
         setOpen(false)
         navigate('/', { replace: true })
       } catch (err) {
@@ -138,10 +137,10 @@ export default function SignUp() {
             Cadastre sua conta
           </Typography>
           <Collapse in={show}>
-              <Alert severity="error"><p>{message}</p></Alert>
-            </Collapse>
+            <Alert severity="error"><p>{message}</p></Alert>
+          </Collapse>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-            <Grid container spacing={2} columns = {12}>
+            <Grid container spacing={2} columns={12}>
               <Grid item xs={12}>
                 <TextField
                   autoComplete="given-name"
@@ -169,17 +168,17 @@ export default function SignUp() {
               <Grid item xs={12}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DesktopDatePicker
-                      required
-                      label="Data de nascimento *"
-                      inputFormat="DD/MM/YYYY"
-                      value={form.birthDate}
-                      renderInput={(params) => <TextField {...params} />}
-                      onChange={(e) => setField('birthDate', e)}
-                    />
+                    required
+                    label="Data de nascimento *"
+                    inputFormat="DD/MM/YYYY"
+                    value={form.birthDate}
+                    renderInput={(params) => <TextField {...params} />}
+                    onChange={(e) => setField('birthDate', e)}
+                  />
                 </LocalizationProvider>
               </Grid>
               <Grid item xs={4} >
-              <FormControl>
+                <FormControl>
                   <InputLabel id="demo-simple-select-label">País</InputLabel>
                   <Select
                     sx={{ width: 170 }}
@@ -207,7 +206,7 @@ export default function SignUp() {
                     sx={{ width: 170 }}
                     labelId="demo-simple-select-outlined-label"
                     id="demo-simple-select-outlined"
-                    label = "Estado"
+                    label="Estado"
                     value={state}
                     onChange={(e) => setState(e.target.value)}
                   >
@@ -236,7 +235,7 @@ export default function SignUp() {
                     <MenuItem value="">
                       <em>-</em>
                     </MenuItem>
-                    {City.getCitiesOfState(country.isoCode,state.isoCode).map((city) => (
+                    {City.getCitiesOfState(country.isoCode, state.isoCode).map((city) => (
                       <MenuItem value={city}>
                         {city.name}
                       </MenuItem>

@@ -9,11 +9,11 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import { createSession } from '../../services/api';
 
 const theme = createTheme();
 
@@ -27,16 +27,13 @@ export default function SignIn() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
+
     try {
       setOpen(true);
-      const response = await axios.post('https://web-production-8fea.up.railway.app/auth/login', {
-        email,
-        password
-      });
+      await createSession(email, password);
       setOpen(false);
       navigate('/main', { replace: true })
-    } catch(err) {
+    } catch (err) {
       if (err.response.data.message) {
         setError(err.response.data.message);
       }
@@ -76,7 +73,7 @@ export default function SignIn() {
               onChange={(e) => {
                 setEmail(e.target.value);
                 setError('');
-              } }
+              }}
             />
             <TextField
               margin="normal"
@@ -91,7 +88,7 @@ export default function SignIn() {
               onChange={(e) => {
                 setPassword(e.target.value);
                 setError('');
-              } }
+              }}
             />
             {
               error ? <Alert severity="warning">{error}</Alert> : null
