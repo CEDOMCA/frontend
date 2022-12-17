@@ -32,6 +32,14 @@ import Fab from '@mui/material/Fab';
 import { width } from '@mui/system';
 import { useState, useEffect } from "react";
 import axios from 'axios';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -39,9 +47,27 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function Fonts() {
   const [open, setOpen] = React.useState(false);
-  const [counter, setCounter] = useState(1);
   const [fonts, setFonts] = useState([]);
   const [hidden, setHidden] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [inputChars, setInputChars] = useState([
+    {  name: '', domain: '' }
+  ])
+  const [openSnack, setOpenSnack] = React.useState(false);
+
+  const handleClickSnack = () => {
+    setOpenSnack(true);
+  };
+
+  const handleCloseSnack = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnack(false);
+  };
 
   const fetchProducts = async () => {
     try {
@@ -66,7 +92,8 @@ export default function Fonts() {
   }, []);
 
   const handleClick = () => {
-    setCounter(counter + 1);
+    let newfield = { name: '', domain: '' }
+    setInputChars([...inputChars, newfield])
   };
 
   const handleClickOpen = () => {
@@ -75,42 +102,40 @@ export default function Fonts() {
 
   const handleClose = () => {
     setOpen(false);
-    setCounter(1);
+    setInputChars([{  name: '', domain: '' }])
   };
 
-  const renderNewChar = () => {
-    return(
-      <Grid container
-                    spacing={2}
-                    direction="row"
-                    justifyContent="center"
-                    alignItems="center"
-                    sx={{mt: 2}}>
-                    <TextField
-                      required
-                      id="charName"
-                      label="Nome da característica"
-                      name="charName"
-                      sx = {{width: '40%', mr: 2}}
-                    />
+  const handleCharChanges = (index, event) => {
+    let data = [...inputChars];
+    data[index][event.target.name] = event.target.value;
+    setInputChars(data);
+  }
 
-                    <FormControl>
-                      <InputLabel id="demo-simple-select-label">Possíveis Valores</InputLabel>
-                      <Select
-                        sx = {{width: 300}}
-                        labelId="demo-simple-select-outlined-label"
-                        id="demo-simple-select-outlined"
-                        label="Possíveis Valores"
-                      >
-                        <MenuItem value="">
-                          Apenas números
-                        </MenuItem>
-                        <MenuItem value="">Apenas letras</MenuItem>
-                        <MenuItem value="">Apenas letras e números</MenuItem>
-                      </Select>
-                    </FormControl>
-                </Grid>
-    );
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true)
+    const data = {
+      name: name,
+      description: description,
+      attributes: inputChars
+    };
+    try {
+      
+      const res = await axios.post('https://web-production-8fea.up.railway.app/fonts', data);
+      setLoading(false);
+      handleClose();
+      handleClickSnack();
+      fetchProducts();
+      setName("");
+      setDescription("");
+    } catch (err) {
+      setLoading(false);
+      console.log(err);
+      
+      let errorMsg = err.response.data.message.toString();
+      let newErrorMsg = errorMsg.replaceAll(",", "\n\n");
+    }
   }
 
     return(
@@ -167,10 +192,10 @@ export default function Fonts() {
                   direction="column"
                   justifyContent="center"
                   alignItems="flex-start">
-                    <Button size="small" variant="text" startIcon={<DeleteIcon />} color="error">
+                    <Button size="small" variant="text" key={font.id} startIcon={<DeleteIcon />} color="error">
                     Excluir fonte
                     </Button>
-                    <Button size="small" variant="text" startIcon={<EditIcon />} >
+                    <Button size="small" variant="text" key={font.id} startIcon={<EditIcon />} >
                     Editar fonte
                     </Button>
                   </Grid>  
@@ -217,7 +242,7 @@ export default function Fonts() {
                     Back
               </Button> 
               {"Cadastrar nova fonte"}
-              <Button variant="contained" onClick={handleClose}>
+              <Button variant="contained" onClick={handleSubmit}>
                     Cadastrar
               </Button> 
             </Grid>
@@ -243,21 +268,59 @@ export default function Fonts() {
                   id="name"
                   label="Nome"
                   autoFocus
+                  value={name}
+                  onChange={e => setName(e.target.value)}
                 />
               </Grid>
               <Grid item xs={6.5}>
                 <TextField
                   required
                   fullWidth
+                  value={description}
                   id="description"
                   label="Descrição"
                   name="description"
+                  onChange={e => setDescription(e.target.value)}
                 />
               </Grid>
 
               <Grid item xs={11} sx={{mt: 2}}>
-                  {Array.from(Array(counter)).map((c, index) => {
-                    return renderNewChar();
+                  {inputChars.map((input, index) => {
+                    return (
+                      <Grid container
+                        spacing={2}
+                        direction="row"
+                        justifyContent="center"
+                        alignItems="center"
+                        sx={{ mt: 2 }}>
+                        <TextField
+                          required
+                          id="charName"
+                          label="Nome da característica"
+                          name="name"
+                          value={input.name}
+                          sx={{ width: '40%', mr: 2 }}
+                          onChange={event => handleCharChanges(index, event)}
+                        />
+
+                        <FormControl>
+                          <InputLabel id="demo-simple-select-label">Possíveis Valores</InputLabel>
+                          <Select
+                            sx={{ width: 300 }}
+                            labelId="demo-simple-select-outlined-label"
+                            id="demo-simple-select-outlined"
+                            label="Possíveis Valores"
+                            name="domain"
+                            value={input.domain}
+                            onChange={event => handleCharChanges(index, event)}
+                          >
+                            <MenuItem value="numeric">Apenas números</MenuItem>
+                            <MenuItem value="textual">Apenas letras</MenuItem>
+                            <MenuItem value="alphanumeric">Apenas letras e números</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                    );
                   })}
                   <Grid container
                     direction="row"
@@ -270,14 +333,22 @@ export default function Fonts() {
                   
               </Grid>
             </Grid>
-            
+            <Backdrop
+              sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+              open={loading}
+            >
+              <CircularProgress color="inherit" />
+            </Backdrop>
           </Box>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose}>Disagree</Button>
-            <Button onClick={handleClose}>Agree</Button>
           </DialogActions>
         </Dialog>
+        <Snackbar open={openSnack} autoHideDuration={6000} onClose={handleCloseSnack}>
+        <Alert onClose={handleCloseSnack} severity="success" sx={{ width: '100%' }}>
+          Fonte registrada com sucesso!
+        </Alert>
+      </Snackbar>
     </Paper>
     );
 }
