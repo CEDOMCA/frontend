@@ -54,9 +54,11 @@ export default function Fonts() {
   const [description, setDescription] = useState("");
   const [inputChars, setInputChars] = useState([
     { name: '', domain: '' }
-  ])
+  ]);
   const [openSnack, setOpenSnack] = React.useState(false);
   const [openSnackDelete, setOpenSnackDelete] = React.useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [currentId, setCurrentId] = useState("");
 
   const handleClickSnack = () => {
     setOpenSnack(true);
@@ -115,6 +117,8 @@ export default function Fonts() {
 
   const handleClose = () => {
     setOpen(false);
+    setName("");
+    setDescription("");
     setInputChars([{ name: '', domain: '' }])
   };
 
@@ -137,6 +141,58 @@ export default function Fonts() {
       setLoading(false);
     }
   }
+  const fetchFontId = async (id) => {
+    try {
+      setLoading(true);
+      const { data } = await axios.get(`https://web-production-8fea.up.railway.app/fonts/${id}`);
+      setName(data.name);
+      setDescription(data.description);
+      var newInputChar = [];
+      data.attributes.map(attr => {
+        let newfield = { name: attr.name, domain: attr.domain }
+        newInputChar.push(newfield)
+      });
+      setInputChars(newInputChar);
+      setCurrentId(id);
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateFont = (id) => {
+    fetchFontId(id);
+    setIsUpdate(true);
+    setOpen(true);
+  }
+
+  const handleSubmitUpdate = async (e, id) => {
+    e.preventDefault();
+    setLoading(true);
+    const data = {
+      name: name,
+      description: description,
+      attributes: inputChars
+    };
+    try {
+
+      const res = await axios.put(`https://web-production-8fea.up.railway.app/fonts/${id}`, data);
+      setLoading(false);
+      handleClose();
+      handleClickSnack();
+      fetchProducts();
+      setName("");
+      setDescription("");
+    } catch (err) {
+      setLoading(false);
+      console.log(err);
+
+      let errorMsg = err.response.data.message.toString();
+      let newErrorMsg = errorMsg.replaceAll(",", "\n\n");
+    }
+  }
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -220,7 +276,7 @@ export default function Fonts() {
                 <Button size="small" variant="text" startIcon={<DeleteIcon />} color="error" onClick={(e) => handleDelete(font.id, e)}>
                   Excluir fonte
                 </Button>
-                <Button size="small" variant="text" startIcon={<EditIcon />} >
+                <Button size="small" variant="text" startIcon={<EditIcon />} onClick={(e) => handleUpdateFont(font.id)}>
                   Editar fonte
                 </Button>
               </Grid>
@@ -267,9 +323,12 @@ export default function Fonts() {
               Back
             </Button>
             {"Cadastrar nova fonte"}
-            <Button variant="contained" onClick={handleSubmit}>
+            {isUpdate ? (<Button variant="contained" onClick={event => handleSubmitUpdate(event, currentId)}>
+              Editar
+            </Button>) : (<Button variant="contained" onClick={handleSubmit}>
               Cadastrar
-            </Button>
+            </Button>)}
+            
           </Grid>
         </DialogTitle>
         <DialogContent>
