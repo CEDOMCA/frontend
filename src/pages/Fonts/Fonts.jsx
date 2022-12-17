@@ -160,7 +160,7 @@ export default function Fonts() {
         Não existe fontes registradas no momento.
       </Typography>
       <List alignItems="center" sx={{ width: '100%', bgcolor: 'background.paper' }}>
-      {fonts.map((fonts) => (
+      {fonts.map((font) => (
         <>
         <ListItem alignItems="center" secondaryAction={
                   <Grid container
@@ -177,7 +177,7 @@ export default function Fonts() {
                   }>
         <ListItemText
           sx={{mr: 15}}
-          primary={fonts.name}
+          primary={font.name}
           secondary={
             <React.Fragment >
               <Typography
@@ -188,12 +188,12 @@ export default function Fonts() {
               >
                 Descrição:
               </Typography>
-              {fonts.description}
+              {font.description}
             </React.Fragment>
           }
         />
       </ListItem>
-      <Divider component="li" />
+      {fonts.at(-1) === font ?  (<></>) : (<Divider component="li" />)}
       </>
       ))}
       
