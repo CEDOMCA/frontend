@@ -176,9 +176,10 @@ export default function Fonts() {
                   </Grid>  
                   }>
         <ListItemText
+          sx={{mr: 15}}
           primary={fonts.name}
           secondary={
-            <React.Fragment>
+            <React.Fragment >
               <Typography
                 sx={{ display: 'inline' }}
                 component="span"
