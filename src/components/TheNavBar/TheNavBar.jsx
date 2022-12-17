@@ -4,11 +4,12 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import AdbIcon from '@mui/icons-material/Adb';
+import LogoutIcon from '@mui/icons-material/Logout';
 import Button from '@mui/material/Button';
 import { AuthContext } from '../../contexts/auth';
 
 function TheNavBar() {
-  const { authenticated, logout } = React.useContext(AuthContext)
+  const { authenticated, logout } = React.useContext(AuthContext);
   const handleLogout = () => {
     logout();
   }
@@ -16,15 +17,16 @@ function TheNavBar() {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+          <AdbIcon sx={{ display: { xs: 'flex', md: 'flex' }, mr: 1 }} />
           <Typography
             variant="h6"
             noWrap
             component="a"
             href="/"
             sx={{
+              flex: 1,
               mr: 2,
-              display: { xs: 'none', md: 'flex' },
+              display: { xs: 'flex', md: 'flex' },
               fontFamily: 'monospace',
               fontWeight: 700,
               letterSpacing: '.3rem',
@@ -34,7 +36,9 @@ function TheNavBar() {
           >
             CEDOMCA
           </Typography>
-          {authenticated ? (<Button color="inherit" onClick={handleLogout}>Logout</Button> ) : (<></>)}
+          {authenticated ? (<Button color="inherit" onClick={handleLogout}>
+            <LogoutIcon sx={{ display: { xs: 'flex', md: 'flex' }, mr: 1 }} />
+          </Button> ) : (<></>)}
         </Toolbar>
       </Container>
     </AppBar>

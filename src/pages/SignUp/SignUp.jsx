@@ -26,6 +26,7 @@ import Collapse from '@mui/material/Collapse';
 import { Country, State, City } from 'country-state-city';
 import { useNavigate } from 'react-router-dom';
 import { createUser } from '../../services/api';
+import { AuthContext } from '../../contexts/auth';
 
 const theme = createTheme();
 
@@ -43,6 +44,13 @@ export default function SignUp() {
   const [show, setShow] = useState(false);
   const allCountry = Country.getAllCountries();
   const navigate = useNavigate();
+
+  const { authenticated } = React.useContext(AuthContext);
+  React.useEffect(() => {
+    if (authenticated) {
+      navigate('/main', { replace: true });
+    }
+  }, [authenticated])
 
   const setField = (field, value) => {
     setForm({

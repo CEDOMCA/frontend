@@ -14,6 +14,7 @@ import Alert from '@mui/material/Alert';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { createSession } from '../../services/api';
+import { AuthContext } from '../../contexts/auth';
 
 const theme = createTheme();
 
@@ -24,15 +25,23 @@ export default function SignIn() {
   const [open, setOpen] = React.useState(false);
 
   const navigate = useNavigate();
+  const { authenticated, setId } = React.useContext(AuthContext);
+  React.useEffect(() => {
+    if (authenticated) {
+      navigate('/main', { replace: true });
+    }
+  }, [authenticated])
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
       setOpen(true);
-      await createSession(email, password);
+      const response = await createSession(email, password);
+      localStorage.setItem("uid", response.data.id);
+      setId(response.data.id);
       setOpen(false);
-      navigate('/main', { replace: true })
+      navigate('/main', { replace: true });
     } catch (err) {
       if (err.response.data.message) {
         setError(err.response.data.message);

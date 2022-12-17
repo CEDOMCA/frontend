@@ -3,7 +3,7 @@ import axios from "axios";
 export const api = axios.create({
     withCredentials: true,
     credentials: 'omit',
-    baseURL: "https://web-production-8fea.up.railway.app",
+    baseURL: "http://localhost:3000",
 })
 
 export const createSession = async (email, password) => {
