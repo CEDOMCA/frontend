@@ -9,11 +9,12 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import { createSession } from '../../services/api';
+import { AuthContext } from '../../contexts/auth';
 
 const theme = createTheme();
 
@@ -24,19 +25,24 @@ export default function SignIn() {
   const [open, setOpen] = React.useState(false);
 
   const navigate = useNavigate();
+  const { authenticated, setId } = React.useContext(AuthContext);
+  React.useEffect(() => {
+    if (authenticated) {
+      navigate('/main', { replace: true });
+    }
+  }, [authenticated])
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
+
     try {
       setOpen(true);
-      const response = await axios.post('https://web-production-8fea.up.railway.app/auth/login', {
-        email,
-        password
-      });
+      const response = await createSession(email, password);
+      localStorage.setItem("uid", response.data.id);
+      setId(response.data.id);
       setOpen(false);
-      navigate('/main', { replace: true })
-    } catch(err) {
+      navigate('/main', { replace: true });
+    } catch (err) {
       if (err.response.data.message) {
         setError(err.response.data.message);
       }
@@ -76,7 +82,7 @@ export default function SignIn() {
               onChange={(e) => {
                 setEmail(e.target.value);
                 setError('');
-              } }
+              }}
             />
             <TextField
               margin="normal"
@@ -91,7 +97,7 @@ export default function SignIn() {
               onChange={(e) => {
                 setPassword(e.target.value);
                 setError('');
-              } }
+              }}
             />
             {
               error ? <Alert severity="warning">{error}</Alert> : null
