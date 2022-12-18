@@ -43,7 +43,7 @@ import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { useNavigate } from 'react-router-dom';
 import { Country, State, City } from 'country-state-city';
 import dayjs from 'dayjs';
-import { getUsers } from '../../services/api';
+import { getUsers, deleteUser, updateUserId, getUserId } from '../../services/api';
 
 
 const pages = ['Obras', 'Fontes', 'Usuários'];
@@ -60,13 +60,13 @@ function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [hidden, setHidden] = useState(false);
   const [errors, setErrors] = useState({});
-  const role = 'visitor';
+  //const role = 'visitor';
   const [message, setMessage] = useState('');
-  const [birthdate, setBirthDate] = useState('');
+  const [birthDate, setBirthDate] = useState('');
   const [country, setCountry] = useState("");
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
-  const [date, setDate] = React.useState(dayjs('2000-08-18T21:11:54'));
+  const [role, setRole] = useState("");
   const [form, setForm] = useState({});
   const allCountry = Country.getAllCountries();
   const navigate = useNavigate();
@@ -131,6 +131,76 @@ function AdminUsers() {
     fetchProducts();
   }, []);
 
+  const fetchUserId = async (id) => {
+    try {
+      setLoading(true);
+      const { data } = await getUserId(id);
+      setName(data.fullName);
+      setBirthDate(data.birthDate);
+      setCity(data.city);
+      setCountry(data.country);
+      setState(data.state);
+
+      setRole(data.role);
+      console.log("AQUI", data.fullName, data.birthDate, data.city, data.country, data.state, data.role)
+
+
+
+      setCurrentId(id);
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateUser = (id) => {
+    fetchUserId(id);
+    setOpen(true);
+  }
+
+  const handleSubmitUpdate = async (e, id) => {
+    e.preventDefault();
+    setLoading(true);
+    const data = {
+      fullName: name,
+      role: role,
+      birthdate: birthDate,
+      country: country,
+      state: state,
+      city: city, 
+      id: id
+
+    };
+    try {
+
+      const res = await updateUserId(id, data);
+      setLoading(false);
+      handleClose();
+      handleClickSnack();
+      fetchProducts();
+    } catch (err) {
+      setLoading(false);
+      console.log(err);
+
+      let errorMsg = err.response.data.message.toString();
+      let newErrorMsg = errorMsg.replaceAll(",", "\n\n");
+    }
+  }
+
+  const handleDelete = async (id, e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const res = await deleteUser(id);
+      setLoading(false);
+      handleClickSnackDelete();
+      fetchProducts();
+    } catch (err) {
+      setLoading(false);
+    }
+  }
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -190,14 +260,15 @@ function AdminUsers() {
       console.log(country)
       setOpen(true)
       const options = {
-        fullName: form.name,
-        birthDate: form.birthDate,
-        email: form.email,
-        password: form.password,
-        country: country.name,
-        state: state.name,
-        city: city.name,
+        fullName: name,
+        birthDate: birthDate,
+        //email: form.email,
+        country: country,
+        state: state,
+        city: city,
         role,
+
+        
       };
       try {
 
@@ -217,32 +288,6 @@ function AdminUsers() {
       }
     }
   };
-
-  const renderNewChar = () => {
-    return (
-      <Grid
-        direction="row"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <FormControl>
-          <InputLabel id="demo-simple-select-label">Papel do usuário *</InputLabel>
-          <Select
-            sx={{ width: 300 }}
-            labelId="demo-simple-select-outlined-label"
-            id="demo-simple-select-outlined"
-            label="Possíveis Valores"
-          >
-            <MenuItem value="">
-              Visitante
-            </MenuItem>
-            <MenuItem value="">Adiministrador</MenuItem>
-            <MenuItem value="">Super</MenuItem>
-          </Select>
-        </FormControl>
-      </Grid>
-    );
-  }
 
 
   return (
@@ -302,14 +347,14 @@ function AdminUsers() {
                 direction="column"
                 justifyContent="center"
                 alignItems="flex-start">
-                <Button size="small" variant="text" startIcon={<DeleteIcon />} color="error">
+                <Button size="small" variant="text" startIcon={<DeleteIcon />} color="error" onClick={(e) => handleDelete(user.id, e)}>
                   Excluir usuário
                 </Button>
                 <Button size="small"
                   variant="text"
                   startIcon={<EditIcon />}
                   disabled={false}
-                  onClick={handleClickOpen} >
+                  onClick={(e) => handleUpdateUser(user.id)}>
                   Editar usuário
                 </Button>
               </Grid>
@@ -324,7 +369,7 @@ function AdminUsers() {
                       variant="body2"
                       color="text.primary"
                     >
-                      E-mail: 
+                      E-mail:
                     </Typography>
                     {" " + user.email}
                   </React.Fragment>
@@ -333,26 +378,6 @@ function AdminUsers() {
             </ListItem>
           ))}
         </List>
-        <Dialog
-          open={open}
-          TransitionComponent={Transition}
-          keepMounted
-          onClose={handleClose}
-          aria-describedby="alert-dialog-slide-description"
-        >
-          <DialogTitle>{"Use Google's location service?"}</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-slide-description">
-              Let Google help apps determine location. This means sending anonymous
-              location data to Google, even when no apps are running.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Disagree</Button>
-            <Button onClick={handleClose}>Agree</Button>
-          </DialogActions>
-        </Dialog>
-
         <Dialog
           open={open}
           fullWidth
@@ -394,21 +419,22 @@ function AdminUsers() {
                       required
                       fullWidth
                       id="fullName"
+                      value={name}
                       label="Nome completo"
                       autoFocus
-                      onChange={(e) => setField('name', e.target.value)}
+                      onChange={(e) => setName(e.target.value)}
                       {...(errors.name && { error: true, helperText: errors.name })}
                     />
                   </Grid>
                   <Grid item xs={12}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DesktopDatePicker
-                        required
+                        
                         label="Data de nascimento *"
                         inputFormat="DD/MM/YYYY"
-                        value={form.birthDate}
+                        value={birthDate}
                         renderInput={(params) => <TextField {...params} />}
-                        onChange={(e) => setField('birthDate', e)}
+                        onChange={(e) => setBirthDate(e)}
                       />
                     </LocalizationProvider>
                   </Grid>
@@ -477,10 +503,23 @@ function AdminUsers() {
                     </FormControl>
                   </Grid>
                   <Grid item xs={6.5}>
-                    {Array.from(Array(counter)).map((c, index) => {
-                      return renderNewChar();
-                    })}
-
+                    <FormControl>
+                      <InputLabel id="demo-simple-select-label">Papel do usuário *</InputLabel>
+                      <Select
+                        sx={{ width: 300 }}
+                        labelId="demo-simple-select-outlined-label"
+                        id="demo-simple-select-outlined"
+                        label="Possíveis Valores"
+                        value={role}
+                        onChange={(e) => setRole(e.target.value)}
+                      >
+                        <MenuItem value="visitor">
+                          Visitante
+                        </MenuItem>
+                        <MenuItem value="admin">Adiministrador</MenuItem>
+                        <MenuItem value="super">Super</MenuItem>
+                      </Select>
+                    </FormControl>
 
                   </Grid>
                 </Grid>
@@ -489,6 +528,7 @@ function AdminUsers() {
                   fullWidth
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
+                  onClick={event => handleSubmitUpdate(event, currentId)}
                 >
                   Confirmar edição
                 </Button>
