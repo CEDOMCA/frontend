@@ -23,9 +23,10 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
-import axios from 'axios';
 import { Country, State, City } from 'country-state-city';
 import { useNavigate } from 'react-router-dom';
+import { createUser } from '../../services/api';
+import { AuthContext } from '../../contexts/auth';
 
 const theme = createTheme();
 
@@ -43,6 +44,13 @@ export default function SignUp() {
   const [show, setShow] = useState(false);
   const allCountry = Country.getAllCountries();
   const navigate = useNavigate();
+
+  const { authenticated } = React.useContext(AuthContext);
+  React.useEffect(() => {
+    if (authenticated) {
+      navigate('/main', { replace: true });
+    }
+  }, [authenticated])
 
   const setField = (field, value) => {
     setForm({
@@ -67,7 +75,7 @@ export default function SignUp() {
     if (!name || name === '') newErrors.name = 'Nome obrigatório';
     // rating errors
     if (!email || email === '') newErrors.email = 'Email obrigatório';
-    else if( !email.includes('@')) newErrors.email = 'Email inválido'
+    else if (!email.includes('@')) newErrors.email = 'Email inválido'
     // comment errors
     if (!password || password === '') newErrors.password = 'Senha obrigatório';
     else if (password.length > 18) newErrors.password = 'Senha muito longa! Sua senha deve conter entre 8 e 18 caracteres';
@@ -101,8 +109,7 @@ export default function SignUp() {
         role,
       };
       try {
-        
-        const res = await axios.post('https://web-production-8fea.up.railway.app/users', options);
+        await createUser(options);
         setOpen(false)
         navigate('/', { replace: true })
       } catch (err) {
@@ -137,8 +144,11 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             Cadastre sua conta
           </Typography>
+          <Collapse in={show}>
+            <Alert severity="error"><p>{message}</p></Alert>
+          </Collapse>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-            <Grid container spacing={2} columns = {12}>
+            <Grid container spacing={2} columns={12}>
               <Grid item xs={12}>
                 <TextField
                   autoComplete="given-name"
@@ -166,22 +176,23 @@ export default function SignUp() {
               <Grid item xs={12}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DesktopDatePicker
-                      required
-                      label="Data de nascimento *"
-                      inputFormat="DD/MM/YYYY"
-                      value={form.birthDate}
-                      renderInput={(params) => <TextField {...params} />}
-                      onChange={(e) => setField('birthDate', e)}
-                    />
+                    required
+                    label="Data de nascimento *"
+                    inputFormat="DD/MM/YYYY"
+                    value={form.birthDate}
+                    renderInput={(params) => <TextField {...params} />}
+                    onChange={(e) => setField('birthDate', e)}
+                  />
                 </LocalizationProvider>
               </Grid>
               <Grid item xs={4} >
-              <FormControl>
-                  <InputLabel  id="demo-simple-select-outlined-label">País</InputLabel>
+                <FormControl>
+                  <InputLabel id="demo-simple-select-label">País</InputLabel>
                   <Select
                     sx={{ width: 170 }}
                     labelId="demo-simple-select-outlined-label"
                     id="demo-simple-select-outlined"
+                    label="País"
                     value={country}
                     onChange={(e) => setCountry(e.target.value)}
                   >
@@ -198,11 +209,12 @@ export default function SignUp() {
               </Grid>
               <Grid item xs={4} >
                 <FormControl>
-                  <InputLabel id="demo-simple-select-outlined-label">Estado</InputLabel>
+                  <InputLabel id="demo-simple-select-label">Estado</InputLabel>
                   <Select
                     sx={{ width: 170 }}
                     labelId="demo-simple-select-outlined-label"
                     id="demo-simple-select-outlined"
+                    label="Estado"
                     value={state}
                     onChange={(e) => setState(e.target.value)}
                   >
@@ -219,18 +231,19 @@ export default function SignUp() {
               </Grid>
               <Grid item xs={4} >
                 <FormControl>
-                  <InputLabel id="demo-simple-select-outlined-label">Cidade</InputLabel>
+                  <InputLabel id="select">Cidade</InputLabel>
                   <Select
                     sx={{ width: 170 }}
                     labelId="demo-simple-select-outlined-label"
                     id="demo-simple-select-outlined"
+                    label="Cidade"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                   >
                     <MenuItem value="">
                       <em>-</em>
                     </MenuItem>
-                    {City.getCitiesOfState(country.isoCode,state.isoCode).map((city) => (
+                    {City.getCitiesOfState(country.isoCode, state.isoCode).map((city) => (
                       <MenuItem value={city}>
                         {city.name}
                       </MenuItem>
@@ -272,9 +285,6 @@ export default function SignUp() {
             >
               Cadastrar-se
             </Button>
-            <Collapse in={show}>
-              <Alert severity="error"><p>{message}</p></Alert>
-            </Collapse>
             <Backdrop
               sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
               open={open}

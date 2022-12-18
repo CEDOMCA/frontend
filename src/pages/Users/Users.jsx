@@ -43,16 +43,10 @@ import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { useNavigate } from 'react-router-dom';
 import { Country, State, City } from 'country-state-city';
 import dayjs from 'dayjs';
-
-
-
-
-
+import { getFonts, deleteFont, getFontId, updateFontId, createFont } from '../../services/api';
 
 
 const pages = ['Obras', 'Fontes', 'Usuários'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
-
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -78,9 +72,179 @@ function AdminUsers() {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
 
+  // vindo de fonts 
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [inputChars, setInputChars] = useState([
+    { name: '', domain: '' }
+  ]);
+  const [openSnack, setOpenSnack] = React.useState(false);
+  const [openSnackDelete, setOpenSnackDelete] = React.useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [currentId, setCurrentId] = useState("");
 
 
 
+  //vindo de fonts
+  const handleClickSnack = () => {
+    setOpenSnack(true);
+  };
+
+  const handleCloseSnack = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnack(false);
+  };
+
+  const handleClickSnackDelete = () => {
+    setOpenSnackDelete(true);
+  };
+
+  const handleCloseSnackDelete = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnackDelete(false);
+  };
+
+  const fetchProducts = async () => {
+    try {
+      const { data } = await getFonts();
+      const fonts = data;
+      setFonts(fonts);
+      console.log(data);
+      if (fonts.len === 0) {
+        setHidden(false);
+      } else {
+        setHidden(true);
+      }
+    } catch (err) {
+      setHidden(false);
+    }
+
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const handleClick = () => {
+    let newfield = { name: '', domain: '' }
+    setInputChars([...inputChars, newfield])
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setName("");
+    setDescription("");
+    setInputChars([{ name: '', domain: '' }])
+  };
+
+  const handleCharChanges = (index, event) => {
+    let data = [...inputChars];
+    data[index][event.target.name] = event.target.value;
+    setInputChars(data);
+  }
+
+  const handleDelete = async (id, e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const res = await deleteFont(id);
+      setLoading(false);
+      handleClickSnackDelete();
+      fetchProducts();
+    } catch (err) {
+      setLoading(false);
+    }
+  }
+  const fetchFontId = async (id) => {
+    try {
+      setLoading(true);
+      const { data } = await getFontId(id);
+      setName(data.name);
+      setDescription(data.description);
+      var newInputChar = [];
+      data.attributes.map(attr => {
+        let newfield = { name: attr.name, domain: attr.domain }
+        newInputChar.push(newfield)
+      });
+      setInputChars(newInputChar);
+      setCurrentId(id);
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateFont = (id) => {
+    fetchFontId(id);
+    setIsUpdate(true);
+    setOpen(true);
+  }
+
+  const handleSubmitUpdate = async (e, id) => {
+    e.preventDefault();
+    setLoading(true);
+    const data = {
+      name: name,
+      description: description,
+      attributes: inputChars
+    };
+    try {
+
+      const res = await updateFontId(id, data);
+      setLoading(false);
+      handleClose();
+      handleClickSnack();
+      fetchProducts();
+      setName("");
+      setDescription("");
+    } catch (err) {
+      setLoading(false);
+      console.log(err);
+
+      let errorMsg = err.response.data.message.toString();
+      let newErrorMsg = errorMsg.replaceAll(",", "\n\n");
+    }
+  }
+  
+
+  const handleSubmitUser = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    const data = {
+      name: name,
+      description: description,
+      attributes: inputChars
+    };
+    try {
+
+      const res = await createFont(data);
+      setLoading(false);
+      handleClose();
+      handleClickSnack();
+      fetchProducts();
+      setName("");
+      setDescription("");
+    } catch (err) {
+      setLoading(false);
+      console.log(err);
+
+      let errorMsg = err.response.data.message.toString();
+      let newErrorMsg = errorMsg.replaceAll(",", "\n\n");
+    }
+  }
+  //
 
   const setField = (field, value) => {
     setForm({
@@ -155,47 +319,6 @@ function AdminUsers() {
         }, 7000);
       }
     }
-  };
-
-
-  const fetchProducts = async () => {
-    try {
-      axios.defaults.withCredentials = true
-      const { data } = await axios.get("https://web-production-8fea.up.railway.app/fonts");
-      const fonts = data;
-      setFonts(fonts);
-      console.log(data);
-      if (fonts.len === 0) {
-        setHidden(false);
-      } else {
-        setHidden(true);
-      }
-    } catch (err) {
-      setHidden(false);
-    }
-
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
-  });
-
-
-  const handleClick = () => {
-    setCounter(counter + 1);
-  };
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setCounter(1);
   };
 
   const renderNewChar = () => {
