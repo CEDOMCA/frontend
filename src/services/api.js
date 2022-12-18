@@ -18,9 +18,16 @@ export const createUser = async (options) => {
     return api.post('/users', options);
 }
 
+export const getUsers = async () => {
+    return api.get('/users');
+}
+
 export const getFonts = async () => {
     return api.get('/fonts');
 }
+
+
+
 
 export const deleteFont = async (id) => {
     return api.delete(`/fonts/${id}`);

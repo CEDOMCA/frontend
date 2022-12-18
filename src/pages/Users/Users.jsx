@@ -43,7 +43,7 @@ import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { useNavigate } from 'react-router-dom';
 import { Country, State, City } from 'country-state-city';
 import dayjs from 'dayjs';
-import { getFonts, deleteFont, getFontId, updateFontId, createFont } from '../../services/api';
+import { getUsers } from '../../services/api';
 
 
 const pages = ['Obras', 'Fontes', 'Usuários'];
@@ -57,7 +57,7 @@ function AdminUsers() {
   const [open, setOpen] = React.useState(false);
 
   const [counter, setCounter] = useState(1);
-  const [fonts, setFonts] = useState([]);
+  const [users, setUsers] = useState([]);
   const [hidden, setHidden] = useState(false);
   const [errors, setErrors] = useState({});
   const role = 'visitor';
@@ -107,17 +107,16 @@ function AdminUsers() {
     if (reason === 'clickaway') {
       return;
     }
-
     setOpenSnackDelete(false);
   };
 
   const fetchProducts = async () => {
     try {
-      const { data } = await getFonts();
-      const fonts = data;
-      setFonts(fonts);
+      const { data } = await getUsers();
+      const users = data;
+      setUsers(users);
       console.log(data);
-      if (fonts.len === 0) {
+      if (users.len === 0) {
         setHidden(false);
       } else {
         setHidden(true);
@@ -132,11 +131,6 @@ function AdminUsers() {
     fetchProducts();
   }, []);
 
-  const handleClick = () => {
-    let newfield = { name: '', domain: '' }
-    setInputChars([...inputChars, newfield])
-  };
-
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -147,103 +141,6 @@ function AdminUsers() {
     setDescription("");
     setInputChars([{ name: '', domain: '' }])
   };
-
-  const handleCharChanges = (index, event) => {
-    let data = [...inputChars];
-    data[index][event.target.name] = event.target.value;
-    setInputChars(data);
-  }
-
-  const handleDelete = async (id, e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const res = await deleteFont(id);
-      setLoading(false);
-      handleClickSnackDelete();
-      fetchProducts();
-    } catch (err) {
-      setLoading(false);
-    }
-  }
-  const fetchFontId = async (id) => {
-    try {
-      setLoading(true);
-      const { data } = await getFontId(id);
-      setName(data.name);
-      setDescription(data.description);
-      var newInputChar = [];
-      data.attributes.map(attr => {
-        let newfield = { name: attr.name, domain: attr.domain }
-        newInputChar.push(newfield)
-      });
-      setInputChars(newInputChar);
-      setCurrentId(id);
-      setLoading(false);
-    } catch (err) {
-      setLoading(false);
-    }
-  };
-
-  const handleUpdateFont = (id) => {
-    fetchFontId(id);
-    setIsUpdate(true);
-    setOpen(true);
-  }
-
-  const handleSubmitUpdate = async (e, id) => {
-    e.preventDefault();
-    setLoading(true);
-    const data = {
-      name: name,
-      description: description,
-      attributes: inputChars
-    };
-    try {
-
-      const res = await updateFontId(id, data);
-      setLoading(false);
-      handleClose();
-      handleClickSnack();
-      fetchProducts();
-      setName("");
-      setDescription("");
-    } catch (err) {
-      setLoading(false);
-      console.log(err);
-
-      let errorMsg = err.response.data.message.toString();
-      let newErrorMsg = errorMsg.replaceAll(",", "\n\n");
-    }
-  }
-  
-
-  const handleSubmitUser = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    const data = {
-      name: name,
-      description: description,
-      attributes: inputChars
-    };
-    try {
-
-      const res = await createFont(data);
-      setLoading(false);
-      handleClose();
-      handleClickSnack();
-      fetchProducts();
-      setName("");
-      setDescription("");
-    } catch (err) {
-      setLoading(false);
-      console.log(err);
-
-      let errorMsg = err.response.data.message.toString();
-      let newErrorMsg = errorMsg.replaceAll(",", "\n\n");
-    }
-  }
   //
 
   const setField = (field, value) => {
@@ -399,40 +296,42 @@ function AdminUsers() {
           Não existem usuários registradas no momento.
         </Typography>
         <List alignItems="center" sx={{ width: '100%', bgcolor: 'background.paper' }}>
-          <ListItem alignItems="center" secondaryAction={
-            <Grid container
-              direction="column"
-              justifyContent="center"
-              alignItems="flex-start">
-              <Button size="small" variant="text" startIcon={<DeleteIcon />} color="error">
-                Excluir usuário
-              </Button>
-              <Button size="small"
-                variant="text"
-                startIcon={<EditIcon />}
-                disabled={false}
-                onClick={handleClickOpen} >
-                Editar usuário
-              </Button>
-            </Grid>
-          }>
-            <ListItemText
-              primary="Nome:"
-              secondary={
-                <React.Fragment>
-                  <Typography
-                    sx={{ display: 'inline' }}
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
-                  >
-                    E-mail:
-                  </Typography>
-                  {" .............."}
-                </React.Fragment>
-              }
-            />
-          </ListItem>
+          {users.map((user) => (
+            <ListItem alignItems="center" secondaryAction={
+              <Grid container
+                direction="column"
+                justifyContent="center"
+                alignItems="flex-start">
+                <Button size="small" variant="text" startIcon={<DeleteIcon />} color="error">
+                  Excluir usuário
+                </Button>
+                <Button size="small"
+                  variant="text"
+                  startIcon={<EditIcon />}
+                  disabled={false}
+                  onClick={handleClickOpen} >
+                  Editar usuário
+                </Button>
+              </Grid>
+            }>
+              <ListItemText
+                primary={"Nome: " + user.fullName}
+                secondary={
+                  <React.Fragment>
+                    <Typography
+                      sx={{ display: 'inline' }}
+                      component="span"
+                      variant="body2"
+                      color="text.primary"
+                    >
+                      E-mail: 
+                    </Typography>
+                    {" " + user.email}
+                  </React.Fragment>
+                }
+              />
+            </ListItem>
+          ))}
         </List>
         <Dialog
           open={open}
