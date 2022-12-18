@@ -5,6 +5,7 @@ import TheNavBar from './components/TheNavBar/TheNavBar'
 import SignIn from './pages/SignIn/SignIn';
 import SignUp from './pages/SignUp/SignUp';
 import Main from './pages/Main/Main';
+import Fonts from './pages/Fonts/Fonts';
 import { AuthContext } from './contexts/auth';
 import { deleteSession } from './services/api';
 
@@ -46,6 +47,7 @@ export default function App() {
         <Routes>
           <Route exact path="/" element={<SignIn />} />
           <Route path="/main" element={<Private><Main /></Private>} />
+          <Route path="/fonts" element={<Private><Fonts /></Private>} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
