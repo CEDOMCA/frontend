@@ -200,13 +200,11 @@ function AdminUsers() {
 
   const renderNewChar = () => {
     return (
-      <Grid container
-        spacing={1}
+      <Grid
         direction="row"
         justifyContent="center"
         alignItems="center"
-        sx={{ mt: 2 }}>
-
+      >
         <FormControl>
           <InputLabel id="demo-simple-select-label">Papel do usuário *</InputLabel>
           <Select
@@ -365,118 +363,114 @@ function AdminUsers() {
                 width: 'auto',
               }}
             >
-              <Grid container alignItems="center" justifyContent="center" spacing={2} columns={12} sx={{ mt: 2 }}>
-                <Grid item xs={6.5}>
-                  <TextField
-                    autoComplete="given-name"
-                    name="name"
-                    required
-                    fullWidth
-                    id="name"
-                    label="Nome"
-                    autoFocus
-                  />
-                </Grid>
-                <Grid item xs={6.5}>
-                  <TextField
-                    required
-                    fullWidth
-                    id="description"
-                    label="Descrição"
-                    name="description"
-                  />
-                </Grid>
-                <Grid item xs={6.5}>
-                  {Array.from(Array(counter)).map((c, index) => {
-                    return renderNewChar();
-                  })}
-                  <Grid container
-                    direction="row"
-                    justifyContent="flex-start"
-                    alignItems="center">
+              <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+                <Grid container spacing={2} columns={12}>
+                  <Grid item xs={12}>
+                    <TextField
+                      autoComplete="given-name"
+                      name="fullName"
+                      required
+                      fullWidth
+                      id="fullName"
+                      label="Nome completo"
+                      autoFocus
+                      onChange={(e) => setField('name', e.target.value)}
+                      {...(errors.name && { error: true, helperText: errors.name })}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DesktopDatePicker
+                        required
+                        label="Data de nascimento *"
+                        inputFormat="DD/MM/YYYY"
+                        value={form.birthDate}
+                        renderInput={(params) => <TextField {...params} />}
+                        onChange={(e) => setField('birthDate', e)}
+                      />
+                    </LocalizationProvider>
                   </Grid>
 
-                </Grid>
-                <Grid item xs={12}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DesktopDatePicker
-                      required
-                      label="Data de nascimento *"
-                      inputFormat="DD/MM/YYYY"
-                      value={form.birthDate}
-                      renderInput={(params) => <TextField {...params} />}
-                      onChange={(e) => setField('birthDate', e)}
-                    />
-                  </LocalizationProvider>
-                </Grid>
-                <Grid item xs={4} >
-                  <FormControl>
-                    <InputLabel id="demo-simple-select-outlined-label">País</InputLabel>
-                    <Select
-                      sx={{ width: 170 }}
-                      labelId="demo-simple-select-outlined-label"
-                      id="demo-simple-select-outlined"
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                    >
-                      <MenuItem value="">
-                        <em>-</em>
-                      </MenuItem>
-                      {allCountry.map((country) => (
-                        <MenuItem value={country}>
-                          {country.name}
+                  <Grid item xs={4} >
+                    <FormControl>
+                      <InputLabel id="demo-simple-select-outlined-label">País</InputLabel>
+                      <Select
+                        sx={{ width: 170 }}
+                        labelId="demo-simple-select-outlined-label"
+                        id="demo-simple-select-outlined"
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                      >
+                        <MenuItem value="">
+                          <em>-</em>
                         </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4} >
-                  <FormControl>
-                    <InputLabel id="demo-simple-select-outlined-label">Estado</InputLabel>
-                    <Select
-                      sx={{ width: 170 }}
-                      labelId="demo-simple-select-outlined-label"
-                      id="demo-simple-select-outlined"
-                      value={state}
-                      onChange={(e) => setState(e.target.value)}
-                    >
-                      <MenuItem value="">
-                        <em>-</em>
-                      </MenuItem>
-                      {State.getStatesOfCountry(country.isoCode).map((state) => (
-                        <MenuItem value={state}>
-                          {state.name}
+                        {allCountry.map((country) => (
+                          <MenuItem value={country}>
+                            {country.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={4} >
+                    <FormControl>
+                      <InputLabel id="demo-simple-select-outlined-label">Estado</InputLabel>
+                      <Select
+                        sx={{ width: 170 }}
+                        labelId="demo-simple-select-outlined-label"
+                        id="demo-simple-select-outlined"
+                        value={state}
+                        onChange={(e) => setState(e.target.value)}
+                      >
+                        <MenuItem value="">
+                          <em>-</em>
                         </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4} >
-                  <FormControl>
-                    <InputLabel id="demo-simple-select-outlined-label">Cidade</InputLabel>
-                    <Select
-                      sx={{ width: 170 }}
-                      labelId="demo-simple-select-outlined-label"
-                      id="demo-simple-select-outlined"
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                    >
-                      <MenuItem value="">
-                        <em>-</em>
-                      </MenuItem>
-                      {City.getCitiesOfState(country.isoCode, state.isoCode).map((city) => (
-                        <MenuItem value={city}>
-                          {city.name}
+                        {State.getStatesOfCountry(country.isoCode).map((state) => (
+                          <MenuItem value={state}>
+                            {state.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={4} >
+                    <FormControl>
+                      <InputLabel id="demo-simple-select-outlined-label">Cidade</InputLabel>
+                      <Select
+                        sx={{ width: 170 }}
+                        labelId="demo-simple-select-outlined-label"
+                        id="demo-simple-select-outlined"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                      >
+                        <MenuItem value="">
+                          <em>-</em>
                         </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                        {City.getCitiesOfState(country.isoCode, state.isoCode).map((city) => (
+                          <MenuItem value={city}>
+                            {city.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={6.5}>
+                    {Array.from(Array(counter)).map((c, index) => {
+                      return renderNewChar();
+                    })}
+
+
+                  </Grid>
                 </Grid>
-                <Button variant="contained" onClick={handleClose} sx={{ mt: 2 }} >
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                >
                   Confirmar edição
                 </Button>
-              </Grid>
-
+              </Box>
 
             </Box>
           </DialogContent>
