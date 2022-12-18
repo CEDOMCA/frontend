@@ -31,11 +31,11 @@ import InputLabel from '@mui/material/InputLabel';
 import Fab from '@mui/material/Fab';
 import { width } from '@mui/system';
 import { useState, useEffect } from "react";
-import axios from 'axios';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import { getFonts, deleteFont, getFontId, updateFontId, createFont } from '../../services/api';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -86,8 +86,7 @@ export default function Fonts() {
 
   const fetchProducts = async () => {
     try {
-      axios.defaults.withCredentials = true
-      const { data } = await axios.get("https://web-production-8fea.up.railway.app/fonts");
+      const { data } = await getFonts();
       const fonts = data;
       setFonts(fonts);
       console.log(data);
@@ -133,7 +132,7 @@ export default function Fonts() {
     setLoading(true);
 
     try {
-      const res = await axios.delete(`https://web-production-8fea.up.railway.app/fonts/${id}`);
+      const res = await deleteFont(id);
       setLoading(false);
       handleClickSnackDelete();
       fetchProducts();
@@ -144,7 +143,7 @@ export default function Fonts() {
   const fetchFontId = async (id) => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`https://web-production-8fea.up.railway.app/fonts/${id}`);
+      const { data } = await getFontId(id);
       setName(data.name);
       setDescription(data.description);
       var newInputChar = [];
@@ -176,7 +175,7 @@ export default function Fonts() {
     };
     try {
 
-      const res = await axios.put(`https://web-production-8fea.up.railway.app/fonts/${id}`, data);
+      const res = await updateFontId(id, data);
       setLoading(false);
       handleClose();
       handleClickSnack();
@@ -203,7 +202,7 @@ export default function Fonts() {
     };
     try {
 
-      const res = await axios.post('https://web-production-8fea.up.railway.app/fonts', data);
+      const res = await createFont(data);
       setLoading(false);
       handleClose();
       handleClickSnack();
