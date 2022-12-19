@@ -18,6 +18,22 @@ export const createUser = async (options) => {
     return api.post('/users', options);
 }
 
+export const getUsers = async () => {
+    return api.get('/users');
+}
+
+export const deleteUser = async (id) => {
+    return api.delete(`/users/${id}`);
+}
+
+export const getUserId = async (id) => {
+    return api.get(`/users/${id}`);
+}
+
+export const updateUserId = async (id, data) => {
+    return api.put(`/users/${id}`, data);
+}
+
 export const getFonts = async () => {
     return api.get('/fonts');
 }
