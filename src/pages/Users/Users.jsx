@@ -511,10 +511,6 @@ function AdminUsers() {
 
             </Box>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Disagree</Button>
-            <Button onClick={handleClose}>Agree</Button>
-          </DialogActions>
         </Dialog>
       </Paper>
 
