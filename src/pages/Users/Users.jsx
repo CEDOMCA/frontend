@@ -44,6 +44,7 @@ import { useNavigate } from 'react-router-dom';
 import { Country, State, City } from 'country-state-city';
 import dayjs from 'dayjs';
 import { getUsers, deleteUser, updateUserId, getUserId } from '../../services/api';
+import id from 'date-fns/esm/locale/id/index.js';
 
 
 const pages = ['Obras', 'Fontes', 'Usuários'];
@@ -140,12 +141,8 @@ function AdminUsers() {
       setCity(data.city);
       setCountry(data.country);
       setState(data.state);
-
       setRole(data.role);
-      console.log("AQUI", data.fullName, data.birthDate, data.city, data.country, data.state, data.role)
-
-
-
+      //console.log("AQUI", data.fullName, data.birthDate, data.city, data.country, data.state, data.role)
       setCurrentId(id);
       setLoading(false);
     } catch (err) {
@@ -163,13 +160,12 @@ function AdminUsers() {
     setLoading(true);
     const data = {
       fullName: name,
+      birthDate: birthDate,
+      country: country.name,
+      state: state.name,
+      city: city.name,
       role: role,
-      birthdate: birthDate,
-      country: country,
-      state: state,
-      city: city, 
       id: id
-
     };
     try {
 
@@ -261,13 +257,12 @@ function AdminUsers() {
       setOpen(true)
       const options = {
         fullName: name,
-        birthDate: birthDate,
-        //email: form.email,
-        country: country,
-        state: state,
-        city: city,
-        role,
-
+        role: role,
+        birthdate: birthDate,
+        country: country.name,
+        state: state.name,
+        city: city.name, 
+        id: id,
         
       };
       try {
@@ -429,7 +424,6 @@ function AdminUsers() {
                   <Grid item xs={12}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DesktopDatePicker
-                        
                         label="Data de nascimento *"
                         inputFormat="DD/MM/YYYY"
                         value={birthDate}
@@ -447,7 +441,11 @@ function AdminUsers() {
                         labelId="demo-simple-select-outlined-label"
                         id="demo-simple-select-outlined"
                         value={country}
-                        onChange={(e) => setCountry(e.target.value)}
+                        onChange={(e) => 
+                        {
+                          setCountry(e.target.value);
+                         //console.log("AAAAAAAA", e.target.value)
+                        }}
                       >
                         <MenuItem value="">
                           <em>-</em>
