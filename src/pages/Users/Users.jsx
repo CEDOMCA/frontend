@@ -2,38 +2,27 @@ import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import Divider from '@mui/material/Divider';
 import ListItemText from '@mui/material/ListItemText';
-import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import Fab from '@mui/material/Fab';
-import { width } from '@mui/system';
 import { useState, useEffect } from "react";
 import axios from 'axios';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -42,7 +31,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { useNavigate } from 'react-router-dom';
 import { Country, State, City } from 'country-state-city';
-import dayjs from 'dayjs';
 import { getUsers, deleteUser, updateUserId, getUserId } from '../../services/api';
 import id from 'date-fns/esm/locale/id/index.js';
 
@@ -84,8 +72,6 @@ function AdminUsers() {
   const [openSnackDelete, setOpenSnackDelete] = React.useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const [currentId, setCurrentId] = useState("");
-
-
 
   //vindo de fonts
   const handleClickSnack = () => {
@@ -136,13 +122,20 @@ function AdminUsers() {
     try {
       setLoading(true);
       const { data } = await getUserId(id);
+      console.log(data);
+      const countryObj = Country.getAllCountries().find((c) => c.name === data.country)
+      console.log(countryObj)
+      const stateObj = State.getStatesOfCountry(countryObj.isoCode).find((s) => s.name === data.state)
+      console.log(stateObj)
+      const cityObj = City.getCitiesOfState(countryObj.isoCode, stateObj.isoCode).find((c) => c.name === data.city)
+      console.log(cityObj)
       setName(data.fullName);
       setBirthDate(data.birthDate);
-      setCity(data.city);
-      setCountry(data.country);
-      setState(data.state);
+      setCountry(countryObj);
+      setCity(cityObj);
+      setState(stateObj);
       setRole(data.role);
-      //console.log("AQUI", data.fullName, data.birthDate, data.city, data.country, data.state, data.role)
+      console.log("AQUI", data.fullName, data.birthDate, data.city, data.country, data.state, data.role)
       setCurrentId(id);
       setLoading(false);
     } catch (err) {
@@ -443,8 +436,8 @@ function AdminUsers() {
                         value={country}
                         onChange={(e) => 
                         {
+                          console.log('aqui', e.target.value)
                           setCountry(e.target.value);
-                         //console.log("AAAAAAAA", e.target.value)
                         }}
                       >
                         <MenuItem value="">
@@ -466,7 +459,9 @@ function AdminUsers() {
                         labelId="demo-simple-select-outlined-label"
                         id="demo-simple-select-outlined"
                         value={state}
-                        onChange={(e) => setState(e.target.value)}
+                        onChange={(e) => {
+                          setState(e.target.value);
+                        }}
                       >
                         <MenuItem value="">
                           <em>-</em>
