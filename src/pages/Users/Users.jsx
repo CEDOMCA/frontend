@@ -35,7 +35,6 @@ import { getUsers, deleteUser, updateUserId, getUserId } from '../../services/ap
 import id from 'date-fns/esm/locale/id/index.js';
 
 
-const pages = ['Obras', 'Fontes', 'Usuários'];
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -280,24 +279,7 @@ function AdminUsers() {
 
   return (
     <div>
-      <AppBar position="static">
-        <Container maxWidth="xl">
-          <Toolbar disableGutters>
-            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-              {pages.map((page) => (
-                <Button
-                  key={page}
-                  sx={{ my: 2, color: 'white', display: 'block' }}
-                >
-                  {page}
-                </Button>
-              ))}
-            </Box>
-            <Box sx={{ flexGrow: 0 }}>
-            </Box>
-          </Toolbar>
-        </Container>
-      </AppBar>
+
       <Paper sx={{ maxWidth: 980, margin: 'auto', marginTop: 5, overflow: 'hidden' }}>
         <AppBar
           position="static"
