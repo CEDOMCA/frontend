@@ -50,7 +50,7 @@ export default function App() {
           <Route path="/main" element={<Private><Main /></Private>} />
           <Route path="/fonts" element={<Private><Fonts /></Private>} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/users" element={<Users />} />
+          <Route path="/users" element={<Private><Users /></Private>}/>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthContext.Provider>

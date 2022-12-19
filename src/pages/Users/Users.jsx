@@ -410,11 +410,12 @@ function AdminUsers() {
 
                   <Grid item xs={4} >
                     <FormControl>
-                      <InputLabel id="demo-simple-select-outlined-label">País</InputLabel>
+                      <InputLabel id="demo-simple-select-outlined-label">País *</InputLabel>
                       <Select
                         sx={{ width: 170 }}
                         labelId="demo-simple-select-outlined-label"
                         id="demo-simple-select-outlined"
+                        label="País * "
                         value={country}
                         onChange={(e) => 
                         {
@@ -435,12 +436,13 @@ function AdminUsers() {
                   </Grid>
                   <Grid item xs={4} >
                     <FormControl>
-                      <InputLabel id="demo-simple-select-outlined-label">Estado</InputLabel>
+                      <InputLabel id="demo-simple-select-outlined-label">Estado *</InputLabel>
                       <Select
                         sx={{ width: 170 }}
                         labelId="demo-simple-select-outlined-label"
                         id="demo-simple-select-outlined"
                         value={state}
+                        label="Estado * "
                         onChange={(e) => {
                           setState(e.target.value);
                         }}
@@ -458,11 +460,12 @@ function AdminUsers() {
                   </Grid>
                   <Grid item xs={4} >
                     <FormControl>
-                      <InputLabel id="demo-simple-select-outlined-label">Cidade</InputLabel>
+                      <InputLabel id="demo-simple-select-outlined-label">Cidade *</InputLabel>
                       <Select
                         sx={{ width: 170 }}
                         labelId="demo-simple-select-outlined-label"
                         id="demo-simple-select-outlined"
+                        label="Cidade * "
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
                       >
