@@ -1,6 +1,7 @@
 import AdbIcon from '@mui/icons-material/Adb';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Stack, Button, Typography, AppBar, Toolbar } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { useContext } from 'react';
 import { AuthContext } from '../../contexts/auth';
 import { TheNavBarTabs } from './TheNavBarTabs';
@@ -8,7 +9,18 @@ import { TheNavBarTabs } from './TheNavBarTabs';
 export const TheNavBar = () => {
   const { authenticated, logout } = useContext(AuthContext);
 
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   const handleLogout = () => {
+    setOpen(false);
     logout();
   };
 
@@ -54,11 +66,30 @@ export const TheNavBar = () => {
           </Stack>
         ) : null}
         {authenticated ? (
-          <Button color="inherit" onClick={handleLogout} startIcon={<LogoutIcon />}>
+          <Button color="inherit" onClick={handleClickOpen} startIcon={<LogoutIcon />}>
             Logout
           </Button>
         ) : null}
       </Toolbar>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Sair"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Você tem certeza que deseja sair?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancelar</Button>
+          <Button onClick={handleLogout} autoFocus>OK</Button>
+        </DialogActions>
+      </Dialog>
     </AppBar>
   );
 };
