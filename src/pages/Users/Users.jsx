@@ -3,7 +3,6 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
@@ -16,7 +15,6 @@ import ListItemText from '@mui/material/ListItemText';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
@@ -40,15 +38,14 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 function AdminUsers() {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [searchString, setSearchString] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
+
   const [open, setOpen] = React.useState(false);
 
-  const [counter, setCounter] = useState(1);
   const [users, setUsers] = useState([]);
   const [hidden, setHidden] = useState(false);
   const [errors, setErrors] = useState({});
-  //const role = 'visitor';
   const [message, setMessage] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [country, setCountry] = useState("");
@@ -69,7 +66,6 @@ function AdminUsers() {
   ]);
   const [openSnack, setOpenSnack] = React.useState(false);
   const [openSnackDelete, setOpenSnackDelete] = React.useState(false);
-  const [isUpdate, setIsUpdate] = useState(false);
   const [currentId, setCurrentId] = useState("");
 
   //vindo de fonts
@@ -77,26 +73,11 @@ function AdminUsers() {
     setOpenSnack(true);
   };
 
-  const handleCloseSnack = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setOpenSnack(false);
-  };
-
   const handleClickSnackDelete = () => {
     setOpenSnackDelete(true);
   };
 
-  const handleCloseSnackDelete = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setOpenSnackDelete(false);
-  };
-
-  const fetchProducts = async () => {
+  const fetchUsers = async () => {
     try {
       const { data } = await getUsers();
       const users = data;
@@ -114,27 +95,29 @@ function AdminUsers() {
   };
 
   useEffect(() => {
-    fetchProducts();
+    fetchUsers();
   }, []);
+
+  useEffect(() => {
+    const searchedUsers = users.filter((user) =>
+      user.fullName.toLowerCase().includes(searchString.toLowerCase())
+    );
+    setSearchResult(searchedUsers);
+  }, [searchString]);
 
   const fetchUserId = async (id) => {
     try {
       setLoading(true);
       const { data } = await getUserId(id);
-      console.log(data);
       const countryObj = Country.getAllCountries().find((c) => c.name === data.country)
-      console.log(countryObj)
       const stateObj = State.getStatesOfCountry(countryObj.isoCode).find((s) => s.name === data.state)
-      console.log(stateObj)
       const cityObj = City.getCitiesOfState(countryObj.isoCode, stateObj.isoCode).find((c) => c.name === data.city)
-      console.log(cityObj)
       setName(data.fullName);
       setBirthDate(data.birthDate);
       setCountry(countryObj);
       setCity(cityObj);
       setState(stateObj);
       setRole(data.role);
-      console.log("AQUI", data.fullName, data.birthDate, data.city, data.country, data.state, data.role)
       setCurrentId(id);
       setLoading(false);
     } catch (err) {
@@ -165,13 +148,10 @@ function AdminUsers() {
       setLoading(false);
       handleClose();
       handleClickSnack();
-      fetchProducts();
+      fetchUsers();
     } catch (err) {
       setLoading(false);
       console.log(err);
-
-      let errorMsg = err.response.data.message.toString();
-      let newErrorMsg = errorMsg.replaceAll(",", "\n\n");
     }
   }
 
@@ -183,36 +163,17 @@ function AdminUsers() {
       const res = await deleteUser(id);
       setLoading(false);
       handleClickSnackDelete();
-      fetchProducts();
+      fetchUsers();
     } catch (err) {
       setLoading(false);
     }
   }
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
 
   const handleClose = () => {
     setOpen(false);
     setName("");
     setDescription("");
     setInputChars([{ name: '', domain: '' }])
-  };
-  //
-
-  const setField = (field, value) => {
-    setForm({
-      ...form,
-      [field]: value,
-    });
-
-    if (errors[field]) {
-      setErrors({
-        ...errors,
-        [field]: null,
-      });
-    }
   };
 
   const findFormErrors = () => {
@@ -296,6 +257,8 @@ function AdminUsers() {
                 <TextField
                   fullWidth
                   placeholder="Pequisar por nome do usuário"
+                  value={searchString}
+                  onChange={(e) => setSearchString(e.target.value)}
                   InputProps={{
                     disableUnderline: true,
                     sx: { fontSize: 'default' },
@@ -311,7 +274,42 @@ function AdminUsers() {
           Não existem usuários registradas no momento.
         </Typography>
         <List alignItems="center" sx={{ width: '100%', bgcolor: 'background.paper' }}>
-          {users.map((user) => (
+          {searchString === '' ? users.map((user) => (
+            <ListItem alignItems="center" secondaryAction={
+              <Grid container
+                direction="column"
+                justifyContent="center"
+                alignItems="flex-start">
+                <Button size="small" variant="text" startIcon={<DeleteIcon />} color="error" onClick={(e) => handleDelete(user.id, e)}>
+                  Excluir usuário
+                </Button>
+                <Button size="small"
+                  variant="text"
+                  startIcon={<EditIcon />}
+                  disabled={false}
+                  onClick={(e) => handleUpdateUser(user.id)}>
+                  Editar usuário
+                </Button>
+              </Grid>
+            }>
+              <ListItemText
+                primary={"Nome: " + user.fullName}
+                secondary={
+                  <React.Fragment>
+                    <Typography
+                      sx={{ display: 'inline' }}
+                      component="span"
+                      variant="body2"
+                      color="text.primary"
+                    >
+                      E-mail:
+                    </Typography>
+                    {" " + user.email}
+                  </React.Fragment>
+                }
+              />
+            </ListItem>
+          )) : searchResult.map((user) => (
             <ListItem alignItems="center" secondaryAction={
               <Grid container
                 direction="column"
