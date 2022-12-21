@@ -3,7 +3,7 @@ import AdbIcon from '@mui/icons-material/Adb';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { AuthContext } from '../../contexts/auth';
 import { Stack, Button, Typography, AppBar, Toolbar } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { TheNavBarTabs } from './TheNavBarTabs';
 
 export const TheNavBar = () => {
   const { authenticated, logout } = React.useContext(AuthContext);
@@ -32,9 +32,7 @@ export const TheNavBar = () => {
           <Stack direction='row' spacing={2} sx={{
             flexGrow: 1
           }}>
-            <Button component={Link} color='inherit' to="/">Obras</Button>
-            <Button component={Link} color='inherit' to="/fonts">Fontes</Button>
-            <Button component={Link} color='inherit' to="/users">Usuários</Button>
+            <TheNavBarTabs/>
           </Stack> 
           : null
         }
