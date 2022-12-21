@@ -298,9 +298,18 @@ export default function Fonts() {
           </Stack>
         </Toolbar>
       </AppBar>
-      {/* <Typography sx={{ my: 5, mx: 2 }} color="text.secondary" align="center" hidden={hidden}>
-        Não existe fontes registradas no momento.
-      </Typography> */}
+      {
+        !loadingData && fonts.length === 0 && 
+          <Typography variant='h6' sx={{ my: 5, mx: 2 }} color="text.secondary" align="center">
+            {'Nenhuma fonte foi cadastrada ainda :('}
+          </Typography>
+      }
+      {
+        !loadingData && fonts.length !== 0 && searchResult.length === 0 && 
+          <Typography variant='h6' sx={{ my: 5, mx: 2 }} color="text.secondary" align="center">
+            {'Nenhuma fonte encontrada :('}
+          </Typography>
+      }
       <List alignItems="center" sx={{ width: '100%', bgcolor: 'background.paper' }}>
         {loadingData ? buildSkeletonList() : buildFontsList()}
       </List>

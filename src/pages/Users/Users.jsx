@@ -298,9 +298,18 @@ function AdminUsers() {
             </Grid>
           </Toolbar>
         </AppBar>
-        {/* <Typography sx={{ my: 5, mx: 2 }} color="text.secondary" align="center" hidden>
-          Não existem usuários registradas no momento.
-        </Typography> */}
+        {
+        !loadingData && users.length === 0 && 
+          <Typography variant='h6' sx={{ my: 5, mx: 2 }} color="text.secondary" align="center">
+            {'Nenhum usuário foi cadastrado ainda :('}
+          </Typography>
+      }
+      {
+        !loadingData && users.length !== 0 && searchResult.length === 0 && 
+          <Typography variant='h6' sx={{ my: 5, mx: 2 }} color="text.secondary" align="center">
+            {'Nenhum usuário encontrado :('}
+          </Typography>
+      }
         <List alignItems="center" sx={{ width: '100%', bgcolor: 'background.paper' }}>
           {loadingData ? buildSkeletonList() : buildUsersList()}
         </List>
