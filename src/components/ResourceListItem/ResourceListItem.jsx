@@ -1,16 +1,17 @@
-import { Box, Divider, ListItem, ListItemText, Typography } from "@mui/material";
+import { Box, Divider, ListItem, ListItemText, Skeleton, Typography } from "@mui/material";
 import { ResourceListItemActions } from "./ResourceListItemActions";
 
 export const ResourceListItem = (props) => {
-    const { primary, secondary, onClickDelete, onClickUpdate } = props;
+    const { primary, secondary, onClickDelete, onClickUpdate, isLoading } = props;
 
     return (
         <Box>
             <ListItem 
                 secondaryAction={
-                    <ResourceListItemActions 
+					<ResourceListItemActions 
                         onClickDelete={onClickDelete} 
                         onClickUpdate={onClickUpdate}
+						isLoading={isLoading}
                     />
                 }
             >
@@ -22,16 +23,16 @@ export const ResourceListItem = (props) => {
                 >
                     <ListItemText 
                         primary={
-                            <Typography variant='h6'>{primary}</Typography>
+                            <Typography variant='h6'>{isLoading? <Skeleton/> : primary}</Typography>
                         }
                         secondary={
-                            <Typography variant='subtitle1'>{secondary}</Typography>
+                            <Typography variant='subtitle1'>{isLoading? <Skeleton/> : secondary}</Typography>
                         }
                     />
 
                 </Box>
             </ListItem>
             <Divider/>
-        </Box>            
+        </Box>
     );
 };

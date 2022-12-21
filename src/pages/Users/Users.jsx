@@ -16,7 +16,8 @@ import {
   FormControl, 
   InputLabel, 
   Select, 
-  DialogTitle 
+  DialogTitle,
+  Stack
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
@@ -38,6 +39,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 function AdminUsers() {
   const [searchString, setSearchString] = useState("");
   const [searchResult, setSearchResult] = useState([]);
+  const [loadingData, setLoadingData] = useState(true);
 
   const [open, setOpen] = React.useState(false);
 
@@ -95,7 +97,7 @@ function AdminUsers() {
   useEffect(() => {
     document.title = 'CEDOMCA | Lista de usuários';
     
-    fetchUsers();
+    fetchUsers().then(() => setLoadingData(false));
   }, []);
 
   useEffect(() => {
@@ -103,7 +105,7 @@ function AdminUsers() {
       user.fullName.toLowerCase().includes(searchString.toLowerCase())
     );
     setSearchResult(searchedUsers);
-  }, [searchString]);
+  }, [searchString, users]);
 
   const fetchUserId = async (id) => {
     try {
@@ -238,6 +240,34 @@ function AdminUsers() {
     }
   };
 
+  const buildSkeletonList = () => (
+    <>
+      <ResourceListItem isLoading={loadingData}/>
+      <ResourceListItem isLoading={loadingData}/>
+      <ResourceListItem isLoading={loadingData}/>
+    </>
+  );
+
+  const buildUsersList = () => (
+    searchString === '' ? users.map((user) => (
+      <ResourceListItem 
+        primary={user.fullName}
+        secondary={user.email}
+        onClickDelete={(event) => handleDeleteUser(user.id, event)}
+        onClickUpdate={(event) => handleUpdateUser(user.id, event)}
+        isLoading={loadingData}
+      />
+    )) : searchResult.map((user) => (
+      <ResourceListItem 
+        primary={user.fullName}
+        secondary={user.email}
+        onClickDelete={(event) => handleDeleteUser(user.id, event)}
+        onClickUpdate={(event) => handleUpdateUser(user.id, event)}
+        isLoading={loadingData}
+      />
+    ))
+  )
+
   return (
     <div>
 
@@ -249,46 +279,39 @@ function AdminUsers() {
           sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}
         >
           <Toolbar>
-            <Grid container spacing={1} alignItems="center">
-              <Grid item>
-                <SearchIcon color="inherit" sx={{ display: 'block' }} />
-              </Grid>
-              <Grid item sm={3.0}>
-                <TextField
+            <Stack direction='row' sx={{
+              flexGrow: 1,
+            }}>
+              <TextField
                   fullWidth
-                  placeholder="Pequisar por nome do usuário"
-                  value={searchString}
-                  onChange={(e) => setSearchString(e.target.value)}
+                  placeholder="Pesquisar por nome do usuário"
                   InputProps={{
                     disableUnderline: true,
                     sx: { fontSize: 'default' },
+                    startAdornment: (
+                      <SearchIcon color="inherit" sx={{ display: 'block' }} />
+                    )
                   }}
                   variant="standard"
-                />
-              </Grid>
-
-            </Grid>
+                  onChange={(event) => setSearchString(event.target.value)}
+              />
+            </Stack>
           </Toolbar>
         </AppBar>
-        <Typography sx={{ my: 5, mx: 2 }} color="text.secondary" align="center" hidden>
-          Não existem usuários registradas no momento.
-        </Typography>
+        {
+        !loadingData && users.length === 0 && 
+          <Typography variant='h6' sx={{ my: 5, mx: 2 }} color="text.secondary" align="center">
+            {'Nenhum usuário foi cadastrado ainda :('}
+          </Typography>
+      }
+      {
+        !loadingData && users.length !== 0 && searchResult.length === 0 && 
+          <Typography variant='h6' sx={{ my: 5, mx: 2 }} color="text.secondary" align="center">
+            {'Nenhum usuário encontrado :('}
+          </Typography>
+      }
         <List alignItems="center" sx={{ width: '100%', bgcolor: 'background.paper' }}>
-          {searchString === '' ? users.map((user) => (
-            <ResourceListItem 
-              primary={user.fullName} 
-              secondary={user.email} 
-              onClickDelete={(event) => handleDeleteUser(user.id, event)}
-              onClickUpdate={(event) => handleUpdateUser(user.id, event)}
-            />
-          )) : searchResult.map((user) => (
-            <ResourceListItem 
-              primary={user.fullName} 
-              secondary={user.email} 
-              onClickDelete={(event) => handleDeleteUser(user.id, event)}
-              onClickUpdate={(event) => handleUpdateUser(user.id, event)}
-            />
-          ))}
+          {loadingData ? buildSkeletonList() : buildUsersList()}
         </List>
         <Dialog
           open={open}
