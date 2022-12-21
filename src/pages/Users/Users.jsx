@@ -256,7 +256,7 @@ function AdminUsers() {
               <Grid item sm={3.0}>
                 <TextField
                   fullWidth
-                  placeholder="Pequisar por nome do usuário"
+                  placeholder="Pesquisar por nome do usuário"
                   value={searchString}
                   onChange={(e) => setSearchString(e.target.value)}
                   InputProps={{

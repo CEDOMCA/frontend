@@ -241,7 +241,7 @@ export default function Fonts() {
           }}>
             <TextField
                 fullWidth
-                placeholder="Pequisar por nome da fonte"
+                placeholder="Pesquisar por nome da fonte"
                 InputProps={{
                   disableUnderline: true,
                   sx: { fontSize: 'default' },
