@@ -43,10 +43,14 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 export default function Fonts() {
   const [searchString, setSearchString] = useState('');
   const [searchResult, setSearchResult] = useState([]);
-  const [open, setOpen] = React.useState(false);
+
+  const [loadingData, setLoadingData] = useState(true);
+  
+  const [loading, setLoading] = useState(false);
+
+  const [open, setOpen] = useState(false);
   const [fonts, setFonts] = useState([]);
   const [hidden, setHidden] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [inputChars, setInputChars] = useState([
@@ -81,12 +85,11 @@ export default function Fonts() {
     setOpenSnackDelete(false);
   };
 
-  const fetchProducts = async () => {
+  const fetchFonts = async () => {
     try {
       const { data } = await getFonts();
       const fonts = data;
       setFonts(fonts);
-      console.log(data);
       if (fonts.len === 0) {
         setHidden(false);
       } else {
@@ -95,13 +98,12 @@ export default function Fonts() {
     } catch (err) {
       setHidden(false);
     }
-
   };
 
   useEffect(() => {
     document.title = 'CEDOMCA | Lista de fontes'
 
-    fetchProducts();
+    fetchFonts().then(() => setLoadingData(false));
   }, []);
 
   useEffect(() => {
@@ -110,7 +112,7 @@ export default function Fonts() {
     );
 
     setSearchResult(filteredFonts);
-  }, [searchString])
+  }, [searchString, fonts])
 
   const handleClick = () => {
     let newfield = { name: '', domain: '' }
@@ -142,7 +144,7 @@ export default function Fonts() {
       const res = await deleteFont(id);
       setLoading(false);
       handleClickSnackDelete();
-      fetchProducts();
+      fetchFonts();
     } catch (err) {
       setLoading(false);
     }
@@ -154,7 +156,7 @@ export default function Fonts() {
       setName(data.name);
       setDescription(data.description);
       var newInputChar = [];
-      data.attributes.map(attr => {
+      data.attributes.forEach(attr => {
         let newfield = { name: attr.name, domain: attr.domain }
         newInputChar.push(newfield)
       });
@@ -188,7 +190,7 @@ export default function Fonts() {
       setLoading(false);
       handleClose();
       handleClickSnack();
-      fetchProducts();
+      fetchFonts();
       setName("");
       setDescription("");
     } catch (err) {
@@ -215,7 +217,7 @@ export default function Fonts() {
       setLoading(false);
       handleClose();
       handleClickSnack();
-      fetchProducts();
+      fetchFonts();
       setName("");
       setDescription("");
     } catch (err) {
@@ -226,6 +228,34 @@ export default function Fonts() {
       let newErrorMsg = errorMsg.replaceAll(",", "\n\n");
     }
   }
+
+  const buildSkeletonList = () => (
+    <>
+      <ResourceListItem isLoading={loadingData}/>
+      <ResourceListItem isLoading={loadingData}/>
+      <ResourceListItem isLoading={loadingData}/>
+    </>
+  );
+
+  const buildFontsList = () => (
+    searchString === '' ? fonts.map((font) => (
+      <ResourceListItem 
+        primary={font.name}
+        secondary={font.description}
+        onClickDelete={(event) => handleDeleteFont(font.id, event)}
+        onClickUpdate={(event) => handleUpdateFont(font.id, event)}
+        isLoading={loadingData}
+      />
+    )) : searchResult.map((font) => (
+      <ResourceListItem 
+        primary={font.name}
+        secondary={font.description}
+        onClickDelete={(event) => handleDeleteFont(font.id, event)}
+        onClickUpdate={(event) => handleUpdateFont(font.id, event)}
+        isLoading={loadingData}
+      />
+    ))
+  )
 
   return (
     <Paper sx={{ maxWidth: 980, margin: 'auto', marginTop: 5, overflow: 'hidden' }}>
@@ -268,25 +298,11 @@ export default function Fonts() {
           </Stack>
         </Toolbar>
       </AppBar>
-      <Typography sx={{ my: 5, mx: 2 }} color="text.secondary" align="center" hidden={hidden}>
+      {/* <Typography sx={{ my: 5, mx: 2 }} color="text.secondary" align="center" hidden={hidden}>
         Não existe fontes registradas no momento.
-      </Typography>
+      </Typography> */}
       <List alignItems="center" sx={{ width: '100%', bgcolor: 'background.paper' }}>
-        {searchString === '' ? fonts.map((font) => (
-          <ResourceListItem 
-            primary={font.name}
-            secondary={font.description}
-            onClickDelete={(event) => handleDeleteFont(font.id, event)}
-            onClickUpdate={(event) => handleUpdateFont(font.id, event)}
-          />
-        )) : searchResult.map((font) => (
-          <ResourceListItem 
-            primary={font.name}
-            secondary={font.description}
-            onClickDelete={(event) => handleDeleteFont(font.id, event)}
-            onClickUpdate={(event) => handleUpdateFont(font.id, event)}
-          />
-        ))}
+        {loadingData ? buildSkeletonList() : buildFontsList()}
       </List>
       <Dialog
         open={open}
@@ -423,7 +439,7 @@ export default function Fonts() {
               open={loading}
             >
               <CircularProgress color="inherit" />
-            </Backdrop>
+        </Backdrop>
     </Paper>
   );
 }

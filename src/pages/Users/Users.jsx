@@ -38,6 +38,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 function AdminUsers() {
   const [searchString, setSearchString] = useState("");
   const [searchResult, setSearchResult] = useState([]);
+  const [loadingData, setLoadingData] = useState(true);
 
   const [open, setOpen] = React.useState(false);
 
@@ -95,7 +96,7 @@ function AdminUsers() {
   useEffect(() => {
     document.title = 'CEDOMCA | Lista de usuários';
     
-    fetchUsers();
+    fetchUsers().then(() => setLoadingData(false));
   }, []);
 
   useEffect(() => {
@@ -103,7 +104,7 @@ function AdminUsers() {
       user.fullName.toLowerCase().includes(searchString.toLowerCase())
     );
     setSearchResult(searchedUsers);
-  }, [searchString]);
+  }, [searchString, users]);
 
   const fetchUserId = async (id) => {
     try {
@@ -238,6 +239,34 @@ function AdminUsers() {
     }
   };
 
+  const buildSkeletonList = () => (
+    <>
+      <ResourceListItem isLoading={loadingData}/>
+      <ResourceListItem isLoading={loadingData}/>
+      <ResourceListItem isLoading={loadingData}/>
+    </>
+  );
+
+  const buildUsersList = () => (
+    searchString === '' ? users.map((user) => (
+      <ResourceListItem 
+        primary={user.fullName}
+        secondary={user.email}
+        onClickDelete={(event) => handleDeleteUser(user.id, event)}
+        onClickUpdate={(event) => handleUpdateUser(user.id, event)}
+        isLoading={loadingData}
+      />
+    )) : searchResult.map((user) => (
+      <ResourceListItem 
+        primary={user.fullName}
+        secondary={user.email}
+        onClickDelete={(event) => handleDeleteUser(user.id, event)}
+        onClickUpdate={(event) => handleUpdateUser(user.id, event)}
+        isLoading={loadingData}
+      />
+    ))
+  )
+
   return (
     <div>
 
@@ -266,29 +295,14 @@ function AdminUsers() {
                   variant="standard"
                 />
               </Grid>
-
             </Grid>
           </Toolbar>
         </AppBar>
-        <Typography sx={{ my: 5, mx: 2 }} color="text.secondary" align="center" hidden>
+        {/* <Typography sx={{ my: 5, mx: 2 }} color="text.secondary" align="center" hidden>
           Não existem usuários registradas no momento.
-        </Typography>
+        </Typography> */}
         <List alignItems="center" sx={{ width: '100%', bgcolor: 'background.paper' }}>
-          {searchString === '' ? users.map((user) => (
-            <ResourceListItem 
-              primary={user.fullName} 
-              secondary={user.email} 
-              onClickDelete={(event) => handleDeleteUser(user.id, event)}
-              onClickUpdate={(event) => handleUpdateUser(user.id, event)}
-            />
-          )) : searchResult.map((user) => (
-            <ResourceListItem 
-              primary={user.fullName} 
-              secondary={user.email} 
-              onClickDelete={(event) => handleDeleteUser(user.id, event)}
-              onClickUpdate={(event) => handleUpdateUser(user.id, event)}
-            />
-          ))}
+          {loadingData ? buildSkeletonList() : buildUsersList()}
         </List>
         <Dialog
           open={open}
