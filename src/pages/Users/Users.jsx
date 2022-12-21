@@ -16,7 +16,8 @@ import {
   FormControl, 
   InputLabel, 
   Select, 
-  DialogTitle 
+  DialogTitle,
+  Stack
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
@@ -278,24 +279,23 @@ function AdminUsers() {
           sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}
         >
           <Toolbar>
-            <Grid container spacing={1} alignItems="center">
-              <Grid item>
-                <SearchIcon color="inherit" sx={{ display: 'block' }} />
-              </Grid>
-              <Grid item sm={3.0}>
-                <TextField
+            <Stack direction='row' sx={{
+              flexGrow: 1,
+            }}>
+              <TextField
                   fullWidth
                   placeholder="Pesquisar por nome do usuário"
-                  value={searchString}
-                  onChange={(e) => setSearchString(e.target.value)}
                   InputProps={{
                     disableUnderline: true,
                     sx: { fontSize: 'default' },
+                    startAdornment: (
+                      <SearchIcon color="inherit" sx={{ display: 'block' }} />
+                    )
                   }}
                   variant="standard"
-                />
-              </Grid>
-            </Grid>
+                  onChange={(event) => setSearchString(event.target.value)}
+              />
+            </Stack>
           </Toolbar>
         </AppBar>
         {
