@@ -1,7 +1,7 @@
 import './App.css';
 import React, { useContext, useEffect, useState } from "react";
 import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
-import TheNavBar from './components/TheNavBar/TheNavBar'
+import { TheNavBar } from './components/TheNavBar/TheNavBar'
 import SignIn from './pages/SignIn/SignIn';
 import SignUp from './pages/SignUp/SignUp';
 import Main from './pages/Main/Main';
