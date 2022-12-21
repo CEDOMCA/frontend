@@ -1,37 +1,35 @@
 import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import Paper from '@mui/material/Paper';
-import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
+import { 
+  AppBar,
+  Box, 
+  Toolbar, 
+  Typography, 
+  Button, 
+  MenuItem, 
+  Paper, 
+  Grid, 
+  TextField, 
+  List, 
+  Dialog, 
+  DialogContent, 
+  Slide, 
+  FormControl, 
+  InputLabel, 
+  Select, 
+  DialogTitle 
+} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Slide from '@mui/material/Slide';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
 import { useState, useEffect } from "react";
 import axios from 'axios';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import Select from '@mui/material/Select';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { useNavigate } from 'react-router-dom';
 import { Country, State, City } from 'country-state-city';
 import { getUsers, deleteUser, updateUserId, getUserId } from '../../services/api';
 import id from 'date-fns/esm/locale/id/index.js';
-
+import { ResourceListItem } from '../../components/ResourceListItem/ResourceListItem';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -95,6 +93,8 @@ function AdminUsers() {
   };
 
   useEffect(() => {
+    document.title = 'CEDOMCA | Lista de usuários';
+    
     fetchUsers();
   }, []);
 
@@ -125,7 +125,8 @@ function AdminUsers() {
     }
   };
 
-  const handleUpdateUser = (id) => {
+  const handleUpdateUser = (id, event) => {
+    event.preventDefault();
     fetchUserId(id);
     setOpen(true);
   }
@@ -155,8 +156,8 @@ function AdminUsers() {
     }
   }
 
-  const handleDelete = async (id, e) => {
-    e.preventDefault();
+  const handleDeleteUser = async (id, event) => {
+    event.preventDefault();
     setLoading(true);
 
     try {
@@ -237,7 +238,6 @@ function AdminUsers() {
     }
   };
 
-
   return (
     <div>
 
@@ -275,75 +275,19 @@ function AdminUsers() {
         </Typography>
         <List alignItems="center" sx={{ width: '100%', bgcolor: 'background.paper' }}>
           {searchString === '' ? users.map((user) => (
-            <ListItem alignItems="center" secondaryAction={
-              <Grid container
-                direction="column"
-                justifyContent="center"
-                alignItems="flex-start">
-                <Button size="small" variant="text" startIcon={<DeleteIcon />} color="error" onClick={(e) => handleDelete(user.id, e)}>
-                  Excluir usuário
-                </Button>
-                <Button size="small"
-                  variant="text"
-                  startIcon={<EditIcon />}
-                  disabled={false}
-                  onClick={(e) => handleUpdateUser(user.id)}>
-                  Editar usuário
-                </Button>
-              </Grid>
-            }>
-              <ListItemText
-                primary={"Nome: " + user.fullName}
-                secondary={
-                  <React.Fragment>
-                    <Typography
-                      sx={{ display: 'inline' }}
-                      component="span"
-                      variant="body2"
-                      color="text.primary"
-                    >
-                      E-mail:
-                    </Typography>
-                    {" " + user.email}
-                  </React.Fragment>
-                }
-              />
-            </ListItem>
+            <ResourceListItem 
+              primary={user.fullName} 
+              secondary={user.email} 
+              onClickDelete={(event) => handleDeleteUser(user.id, event)}
+              onClickUpdate={(event) => handleUpdateUser(user.id, event)}
+            />
           )) : searchResult.map((user) => (
-            <ListItem alignItems="center" secondaryAction={
-              <Grid container
-                direction="column"
-                justifyContent="center"
-                alignItems="flex-start">
-                <Button size="small" variant="text" startIcon={<DeleteIcon />} color="error" onClick={(e) => handleDelete(user.id, e)}>
-                  Excluir usuário
-                </Button>
-                <Button size="small"
-                  variant="text"
-                  startIcon={<EditIcon />}
-                  disabled={false}
-                  onClick={(e) => handleUpdateUser(user.id)}>
-                  Editar usuário
-                </Button>
-              </Grid>
-            }>
-              <ListItemText
-                primary={"Nome: " + user.fullName}
-                secondary={
-                  <React.Fragment>
-                    <Typography
-                      sx={{ display: 'inline' }}
-                      component="span"
-                      variant="body2"
-                      color="text.primary"
-                    >
-                      E-mail:
-                    </Typography>
-                    {" " + user.email}
-                  </React.Fragment>
-                }
-              />
-            </ListItem>
+            <ResourceListItem 
+              primary={user.fullName} 
+              secondary={user.email} 
+              onClickDelete={(event) => handleDeleteUser(user.id, event)}
+              onClickUpdate={(event) => handleUpdateUser(user.id, event)}
+            />
           ))}
         </List>
         <Dialog
