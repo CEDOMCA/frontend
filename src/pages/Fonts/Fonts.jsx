@@ -51,6 +51,8 @@ export default function Fonts() {
   const [loading, setLoading] = useState(false);
 
   const [open, setOpen] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [currentDeleteId, setCurrentDeleteId] = useState("");
   const [fonts, setFonts] = useState([]);
   const [hidden, setHidden] = useState(false);
   const [name, setName] = useState("");
@@ -133,6 +135,11 @@ export default function Fonts() {
     setIsUpdate(false);
   };
 
+  const handleCloseConfirm = () => {
+    setOpenConfirm(false);
+    setCurrentDeleteId("");
+  }
+
   const handleCharChanges = (index, event) => {
     let data = [...inputChars];
     data[index][event.target.name] = event.target.value;
@@ -141,6 +148,8 @@ export default function Fonts() {
 
   const handleDeleteFont = async (id, event) => {
     event.preventDefault();
+    setCurrentDeleteId("");
+    setOpenConfirm(false);
     setLoading(true);
 
     try {
@@ -148,6 +157,7 @@ export default function Fonts() {
       setLoading(false);
       handleClickSnackDelete();
       fetchFonts();
+      
     } catch (err) {
       setLoading(false);
     }
@@ -246,7 +256,7 @@ export default function Fonts() {
       <ResourceListItem 
         primary={font.name}
         secondary={font.description}
-        onClickDelete={(event) => handleDeleteFont(font.id, event)}
+        onClickDelete={(event) => showConfirmDelte(font.id, event)}
         onClickUpdate={(event) => handleUpdateFont(font.id, event)}
         isLoading={loadingData}
       />
@@ -254,7 +264,7 @@ export default function Fonts() {
       <ResourceListItem 
         primary={font.name}
         secondary={font.description}
-        onClickDelete={(event) => handleDeleteFont(font.id, event)}
+        onClickDelete={(event) => showConfirmDelte(font.id, event)}
         onClickUpdate={(event) => handleUpdateFont(font.id, event)}
         isLoading={loadingData}
       />
@@ -263,6 +273,12 @@ export default function Fonts() {
 
   const removeCharField = (index) => {
     setInputChars(inputs => inputs.filter((el, i) => i !== index))
+  };
+
+  const showConfirmDelte = (index, event) => {
+    event.preventDefault();
+    setOpenConfirm(true);
+    setCurrentDeleteId(index);
   };
 
   return (
@@ -446,6 +462,21 @@ export default function Fonts() {
           </Box>
         </DialogContent>
         <DialogActions>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={openConfirm}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleClose}
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle>{"Deseja excluir esta fonte?"}</DialogTitle>
+        <DialogContent>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirm} >Cancelar</Button>
+          <Button onClick={(event) => handleDeleteFont(currentDeleteId,event)} color="error">Excluir</Button>
         </DialogActions>
       </Dialog>
       <Snackbar open={openSnack} autoHideDuration={6000} onClose={handleCloseSnack}>
