@@ -23,8 +23,10 @@ import {
   CircularProgress,
   Snackbar,
   Stack,
+  IconButton,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import AddIcon from '@mui/icons-material/Add';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import { useState, useEffect } from "react";
@@ -255,7 +257,11 @@ export default function Fonts() {
         isLoading={loadingData}
       />
     ))
-  )
+  );
+
+  const removeCharField = (index) => {
+    setInputChars(inputs => inputs.filter((el, i) => i !== index))
+  };
 
   return (
     <Paper sx={{ maxWidth: 980, margin: 'auto', marginTop: 5, overflow: 'hidden' }}>
@@ -412,6 +418,14 @@ export default function Fonts() {
                           <MenuItem value="alphanumeric">Letras e números</MenuItem>
                         </Select>
                       </FormControl>
+                      {
+                        inputChars.length > 1 ? 
+                        <IconButton sx={{ml:1}} onClick={e => removeCharField(index)}>
+                          <RemoveCircleIcon color="error"></RemoveCircleIcon>
+                        </IconButton> :
+                        <></>
+                      }
+                      
                     </Grid>
                   );
                 })}
@@ -419,7 +433,7 @@ export default function Fonts() {
                   direction="row"
                   justifyContent="flex-start"
                   alignItems="center">
-                  <Fab color="primary" aria-label="add" sx={{ ml: 18, mt: 2 }} onClick={handleClick}>
+                  <Fab color="primary" aria-label="add" sx={{ ml: inputChars.length > 1 ? 15 : 18, mt: 2 }} onClick={handleClick}>
                     <AddIcon />
                   </Fab> <Typography sx={{ ml: 2, mt: 2 }}>Adicionar nova característica</Typography>
                 </Grid>
