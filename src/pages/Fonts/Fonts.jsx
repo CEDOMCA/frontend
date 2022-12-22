@@ -130,6 +130,7 @@ export default function Fonts() {
     setName("");
     setDescription("");
     setInputChars([{ name: '', domain: '' }])
+    setIsUpdate(false);
   };
 
   const handleCharChanges = (index, event) => {
@@ -195,6 +196,7 @@ export default function Fonts() {
       fetchFonts();
       setName("");
       setDescription("");
+      setIsUpdate(false);
     } catch (err) {
       setLoading(false);
       console.log(err);
@@ -335,9 +337,9 @@ export default function Fonts() {
             alignItems="center">
             <Button onClick={handleClose}>
               <KeyboardArrowLeft />
-              Back
+              Voltar
             </Button>
-            {"Cadastrar nova fonte"}
+            {isUpdate ? "Editar fonte" : "Cadastrar nova fonte"}
             {isUpdate ? (<Button variant="contained" onClick={event => handleSubmitUpdate(event, currentId)}>
               Editar
             </Button>) : (<Button variant="contained" onClick={handleSubmit}>
