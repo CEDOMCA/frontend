@@ -409,7 +409,7 @@ export default function Fonts() {
                         >
                           <MenuItem value="numeric">Apenas números</MenuItem>
                           <MenuItem value="textual">Apenas letras</MenuItem>
-                          <MenuItem value="alphanumeric">Apenas letras e números</MenuItem>
+                          <MenuItem value="alphanumeric">Letras e números</MenuItem>
                         </Select>
                       </FormControl>
                     </Grid>
