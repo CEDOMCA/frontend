@@ -339,7 +339,7 @@ export default function Fonts() {
               <KeyboardArrowLeft />
               Voltar
             </Button>
-            {isUpdate ? "Editar fonte" : "Cadastrar nova fonte"}
+            {isUpdate ? "Editar fonte" : "Cadastrar fonte"}
             {isUpdate ? (<Button variant="contained" onClick={event => handleSubmitUpdate(event, currentId)}>
               Editar
             </Button>) : (<Button variant="contained" onClick={handleSubmit}>
