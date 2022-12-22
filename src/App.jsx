@@ -1,13 +1,13 @@
 import './App.css';
-import React, { useContext, useEffect, useState } from "react";
-import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
-import { TheNavBar } from './components/TheNavBar/TheNavBar'
+import { useContext, useEffect, useState } from 'react';
+import { Route, Routes, Navigate, useNavigate } from 'react-router-dom';
+import { TheNavBar } from './components/TheNavBar/TheNavBar';
+import { AuthContext } from './contexts/auth';
+import Fonts from './pages/Fonts/Fonts';
+import Main from './pages/Main/Main';
 import SignIn from './pages/SignIn/SignIn';
 import SignUp from './pages/SignUp/SignUp';
-import Main from './pages/Main/Main';
 import Users from './pages/Users/Users';
-import Fonts from './pages/Fonts/Fonts';
-import { AuthContext } from './contexts/auth';
 import { deleteSession } from './services/api';
 
 export default function App() {
@@ -16,14 +16,14 @@ export default function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setId(localStorage.getItem("uid"));
+    setId(localStorage.getItem('uid'));
     setLoading(false);
-  }, [])
+  }, []);
 
   const logout = () => {
     try {
       deleteSession();
-      localStorage.removeItem("uid");
+      localStorage.removeItem('uid');
       setId('');
       navigate('/', { replace: true });
     } catch (err) {
@@ -34,25 +34,46 @@ export default function App() {
   const Private = ({ children }) => {
     const { authenticated, loading } = useContext(AuthContext);
     if (loading) {
-      return <div />
+      return <div />;
     }
 
     if (!authenticated) {
-      return <Navigate to="/" />
+      return <Navigate to="/" />;
     }
-    return children
-  }
+    return children;
+  };
   return (
-      <AuthContext.Provider value={{ authenticated: !!id, setId, loading, logout }}>
-        <TheNavBar />
-        <Routes>
-          <Route exact path="/" element={<SignIn />} />
-          <Route path="/main" element={<Private><Main /></Private>} />
-          <Route path="/fonts" element={<Private><Fonts /></Private>} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/users" element={<Private><Users /></Private>}/>
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </AuthContext.Provider>
-  )
+    <AuthContext.Provider value={{ authenticated: !!id, setId, loading, logout }}>
+      <TheNavBar />
+      <Routes>
+        <Route exact path="/" element={<SignIn />} />
+        <Route
+          path="/main"
+          element={
+            <Private>
+              <Main />
+            </Private>
+          }
+        />
+        <Route
+          path="/fonts"
+          element={
+            <Private>
+              <Fonts />
+            </Private>
+          }
+        />
+        <Route path="/signup" element={<SignUp />} />
+        <Route
+          path="/users"
+          element={
+            <Private>
+              <Users />
+            </Private>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AuthContext.Provider>
+  );
 }

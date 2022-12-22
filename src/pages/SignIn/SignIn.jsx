@@ -1,20 +1,20 @@
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
-import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
+import Avatar from '@mui/material/Avatar';
 import Backdrop from '@mui/material/Backdrop';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import { createSession } from '../../services/api';
+import Container from '@mui/material/Container';
+import CssBaseline from '@mui/material/CssBaseline';
+import Link from '@mui/material/Link';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../contexts/auth';
+import { createSession } from '../../services/api';
 
 const theme = createTheme();
 
@@ -30,7 +30,7 @@ export default function SignIn() {
     if (authenticated) {
       navigate('/main', { replace: true });
     }
-  }, [authenticated])
+  }, [authenticated]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -38,7 +38,7 @@ export default function SignIn() {
     try {
       setOpen(true);
       const response = await createSession(email, password);
-      localStorage.setItem("uid", response.data.id);
+      localStorage.setItem('uid', response.data.id);
       setId(response.data.id);
       setOpen(false);
       navigate('/main', { replace: true });
@@ -77,7 +77,6 @@ export default function SignIn() {
               label="E-mail"
               name="email"
               autoComplete="email"
-              autoFocus
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -99,15 +98,8 @@ export default function SignIn() {
                 setError('');
               }}
             />
-            {
-              error ? <Alert severity="warning">{error}</Alert> : null
-            }
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
+            {error ? <Alert severity="warning">{error}</Alert> : null}
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
               Entrar
             </Button>
             <Backdrop

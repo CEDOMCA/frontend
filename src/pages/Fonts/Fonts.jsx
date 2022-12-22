@@ -1,5 +1,7 @@
-import * as React from 'react';
-import { 
+import AddIcon from '@mui/icons-material/Add';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import SearchIcon from '@mui/icons-material/Search';
+import {
   AppBar,
   Toolbar,
   Typography,
@@ -24,13 +26,11 @@ import {
   Snackbar,
   Stack,
 } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import AddIcon from '@mui/icons-material/Add';
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import { useState, useEffect } from "react";
-import { getFonts, deleteFont, getFontId, updateFontId, createFont } from '../../services/api';
+import MuiAlert from '@mui/material/Alert';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { ResourceListItem } from '../../components/ResourceListItem/ResourceListItem';
-import MuiAlert from '@mui/material/Alert'
+import { getFonts, deleteFont, getFontId, updateFontId, createFont } from '../../services/api';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -45,21 +45,19 @@ export default function Fonts() {
   const [searchResult, setSearchResult] = useState([]);
 
   const [loadingData, setLoadingData] = useState(true);
-  
+
   const [loading, setLoading] = useState(false);
 
   const [open, setOpen] = useState(false);
   const [fonts, setFonts] = useState([]);
-  const [hidden, setHidden] = useState(false);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [inputChars, setInputChars] = useState([
-    { name: '', domain: '' }
-  ]);
+  const [, setHidden] = useState(false);
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [inputChars, setInputChars] = useState([{ name: '', domain: '' }]);
   const [openSnack, setOpenSnack] = React.useState(false);
   const [openSnackDelete, setOpenSnackDelete] = React.useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
-  const [currentId, setCurrentId] = useState("");
+  const [currentId, setCurrentId] = useState('');
 
   const handleClickSnack = () => {
     setOpenSnack(true);
@@ -101,22 +99,22 @@ export default function Fonts() {
   };
 
   useEffect(() => {
-    document.title = 'CEDOMCA | Lista de fontes'
+    document.title = 'CEDOMCA | Lista de fontes';
 
     fetchFonts().then(() => setLoadingData(false));
   }, []);
 
   useEffect(() => {
     const filteredFonts = fonts.filter((font) =>
-      font.name.toLowerCase().includes(searchString.toLowerCase())
+      font.name.toLowerCase().includes(searchString.toLowerCase()),
     );
 
     setSearchResult(filteredFonts);
-  }, [searchString, fonts])
+  }, [searchString, fonts]);
 
   const handleClick = () => {
-    let newfield = { name: '', domain: '' }
-    setInputChars([...inputChars, newfield])
+    let newfield = { name: '', domain: '' };
+    setInputChars([...inputChars, newfield]);
   };
 
   const handleClickOpen = () => {
@@ -125,30 +123,30 @@ export default function Fonts() {
 
   const handleClose = () => {
     setOpen(false);
-    setName("");
-    setDescription("");
-    setInputChars([{ name: '', domain: '' }])
+    setName('');
+    setDescription('');
+    setInputChars([{ name: '', domain: '' }]);
   };
 
   const handleCharChanges = (index, event) => {
     let data = [...inputChars];
     data[index][event.target.name] = event.target.value;
     setInputChars(data);
-  }
+  };
 
   const handleDeleteFont = async (id, event) => {
     event.preventDefault();
     setLoading(true);
 
     try {
-      const res = await deleteFont(id);
+      await deleteFont(id);
       setLoading(false);
       handleClickSnackDelete();
       fetchFonts();
     } catch (err) {
       setLoading(false);
     }
-  }
+  };
   const fetchFontId = async (id) => {
     try {
       setLoading(true);
@@ -156,9 +154,9 @@ export default function Fonts() {
       setName(data.name);
       setDescription(data.description);
       var newInputChar = [];
-      data.attributes.forEach(attr => {
-        let newfield = { name: attr.name, domain: attr.domain }
-        newInputChar.push(newfield)
+      data.attributes.forEach((attr) => {
+        let newfield = { name: attr.name, domain: attr.domain };
+        newInputChar.push(newfield);
       });
       setInputChars(newInputChar);
       setCurrentId(id);
@@ -174,7 +172,7 @@ export default function Fonts() {
     fetchFontId(id);
     setIsUpdate(true);
     setOpen(true);
-  }
+  };
 
   const handleSubmitUpdate = async (e, id) => {
     e.preventDefault();
@@ -182,26 +180,21 @@ export default function Fonts() {
     const data = {
       name: name,
       description: description,
-      attributes: inputChars
+      attributes: inputChars,
     };
     try {
-
-      const res = await updateFontId(id, data);
+      await updateFontId(id, data);
       setLoading(false);
       handleClose();
       handleClickSnack();
       fetchFonts();
-      setName("");
-      setDescription("");
+      setName('');
+      setDescription('');
     } catch (err) {
       setLoading(false);
       console.log(err);
-
-      let errorMsg = err.response.data.message.toString();
-      let newErrorMsg = errorMsg.replaceAll(",", "\n\n");
     }
-  }
-  
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -209,53 +202,52 @@ export default function Fonts() {
     const data = {
       name: name,
       description: description,
-      attributes: inputChars
+      attributes: inputChars,
     };
     try {
-
-      const res = await createFont(data);
+      await createFont(data);
       setLoading(false);
       handleClose();
       handleClickSnack();
       fetchFonts();
-      setName("");
-      setDescription("");
+      setName('');
+      setDescription('');
     } catch (err) {
       setLoading(false);
       console.log(err);
-
-      let errorMsg = err.response.data.message.toString();
-      let newErrorMsg = errorMsg.replaceAll(",", "\n\n");
     }
-  }
+  };
 
   const buildSkeletonList = () => (
     <>
-      <ResourceListItem isLoading={loadingData}/>
-      <ResourceListItem isLoading={loadingData}/>
-      <ResourceListItem isLoading={loadingData}/>
+      <ResourceListItem isLoading={loadingData} />
+      <ResourceListItem isLoading={loadingData} />
+      <ResourceListItem isLoading={loadingData} />
     </>
   );
 
-  const buildFontsList = () => (
-    searchString === '' ? fonts.map((font) => (
-      <ResourceListItem 
-        primary={font.name}
-        secondary={font.description}
-        onClickDelete={(event) => handleDeleteFont(font.id, event)}
-        onClickUpdate={(event) => handleUpdateFont(font.id, event)}
-        isLoading={loadingData}
-      />
-    )) : searchResult.map((font) => (
-      <ResourceListItem 
-        primary={font.name}
-        secondary={font.description}
-        onClickDelete={(event) => handleDeleteFont(font.id, event)}
-        onClickUpdate={(event) => handleUpdateFont(font.id, event)}
-        isLoading={loadingData}
-      />
-    ))
-  )
+  const buildFontsList = () =>
+    searchString === ''
+      ? fonts.map((font) => (
+          <ResourceListItem
+            key={font.id}
+            primary={font.name}
+            secondary={font.description}
+            onClickDelete={(event) => handleDeleteFont(font.id, event)}
+            onClickUpdate={(event) => handleUpdateFont(font.id, event)}
+            isLoading={loadingData}
+          />
+        ))
+      : searchResult.map((font) => (
+          <ResourceListItem
+            key={font.id}
+            primary={font.name}
+            secondary={font.description}
+            onClickDelete={(event) => handleDeleteFont(font.id, event)}
+            onClickUpdate={(event) => handleUpdateFont(font.id, event)}
+            isLoading={loadingData}
+          />
+        ));
 
   return (
     <Paper sx={{ maxWidth: 980, margin: 'auto', marginTop: 5, overflow: 'hidden' }}>
@@ -266,21 +258,22 @@ export default function Fonts() {
         sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}
       >
         <Toolbar>
-          <Stack direction='row' sx={{
-            flexGrow: 1,
-          }}>
+          <Stack
+            direction="row"
+            sx={{
+              flexGrow: 1,
+            }}
+          >
             <TextField
-                fullWidth
-                placeholder="Pesquisar por nome da fonte"
-                InputProps={{
-                  disableUnderline: true,
-                  sx: { fontSize: 'default' },
-                  startAdornment: (
-                    <SearchIcon color="inherit" sx={{ display: 'block' }} />
-                  )
-                }}
-                variant="standard"
-                onChange={(event) => setSearchString(event.target.value)}
+              fullWidth
+              placeholder="Pesquisar por nome da fonte"
+              InputProps={{
+                disableUnderline: true,
+                sx: { fontSize: 'default' },
+                startAdornment: <SearchIcon color="inherit" sx={{ display: 'block' }} />,
+              }}
+              variant="standard"
+              onChange={(event) => setSearchString(event.target.value)}
             />
             <Button
               startIcon={<AddIcon />}
@@ -290,7 +283,7 @@ export default function Fonts() {
               onClick={handleClickOpen}
               sx={{
                 whiteSpace: 'nowrap',
-                minWidth: 'max-content'
+                minWidth: 'max-content',
               }}
             >
               Adicionar nova fonte
@@ -298,46 +291,44 @@ export default function Fonts() {
           </Stack>
         </Toolbar>
       </AppBar>
-      {
-        !loadingData && fonts.length === 0 && 
-          <Typography variant='h6' sx={{ my: 5, mx: 2 }} color="text.secondary" align="center">
-            {'Nenhuma fonte foi cadastrada ainda :('}
-          </Typography>
-      }
-      {
-        !loadingData && fonts.length !== 0 && searchResult.length === 0 && 
-          <Typography variant='h6' sx={{ my: 5, mx: 2 }} color="text.secondary" align="center">
-            {'Nenhuma fonte encontrada :('}
-          </Typography>
-      }
+      {!loadingData && fonts.length === 0 && (
+        <Typography variant="h6" sx={{ my: 5, mx: 2 }} color="text.secondary" align="center">
+          {'Nenhuma fonte foi cadastrada ainda :('}
+        </Typography>
+      )}
+      {!loadingData && fonts.length !== 0 && searchResult.length === 0 && (
+        <Typography variant="h6" sx={{ my: 5, mx: 2 }} color="text.secondary" align="center">
+          {'Nenhuma fonte encontrada :('}
+        </Typography>
+      )}
       <List alignItems="center" sx={{ width: '100%', bgcolor: 'background.paper' }}>
         {loadingData ? buildSkeletonList() : buildFontsList()}
       </List>
       <Dialog
         open={open}
         fullWidth
-        maxWidth={"lg"}
+        maxWidth={'lg'}
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
         aria-describedby="alert-dialog-slide-description"
       >
         <DialogTitle>
-          <Grid container
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center">
+          <Grid container direction="row" justifyContent="space-between" alignItems="center">
             <Button onClick={handleClose}>
               <KeyboardArrowLeft />
               Back
             </Button>
-            {"Cadastrar nova fonte"}
-            {isUpdate ? (<Button variant="contained" onClick={event => handleSubmitUpdate(event, currentId)}>
-              Editar
-            </Button>) : (<Button variant="contained" onClick={handleSubmit}>
-              Cadastrar
-            </Button>)}
-            
+            {'Cadastrar nova fonte'}
+            {isUpdate ? (
+              <Button variant="contained" onClick={(event) => handleSubmitUpdate(event, currentId)}>
+                Editar
+              </Button>
+            ) : (
+              <Button variant="contained" onClick={handleSubmit}>
+                Cadastrar
+              </Button>
+            )}
           </Grid>
         </DialogTitle>
         <DialogContent>
@@ -351,7 +342,14 @@ export default function Fonts() {
               width: 'auto',
             }}
           >
-            <Grid container alignItems="center" justifyContent="center" spacing={2} columns={12} sx={{ mt: 2 }}>
+            <Grid
+              container
+              alignItems="center"
+              justifyContent="center"
+              spacing={2}
+              columns={12}
+              sx={{ mt: 2 }}
+            >
               <Grid item xs={6.5}>
                 <TextField
                   autoComplete="given-name"
@@ -360,9 +358,8 @@ export default function Fonts() {
                   fullWidth
                   id="name"
                   label="Nome"
-                  autoFocus
                   value={name}
-                  onChange={e => setName(e.target.value)}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </Grid>
               <Grid item xs={6.5}>
@@ -373,19 +370,21 @@ export default function Fonts() {
                   id="description"
                   label="Descrição"
                   name="description"
-                  onChange={e => setDescription(e.target.value)}
+                  onChange={(e) => setDescription(e.target.value)}
                 />
               </Grid>
 
               <Grid item xs={11} sx={{ mt: 2 }}>
-                {inputChars.map((input, index) => {
-                  return (
-                    <Grid container
+                {inputChars.map((input, index) => (
+                    <Grid
+                      key={index}
+                      container
                       spacing={2}
                       direction="row"
                       justifyContent="center"
                       alignItems="center"
-                      sx={{ mt: 2 }}>
+                      sx={{ mt: 2 }}
+                    >
                       <TextField
                         required
                         id="charName"
@@ -393,7 +392,7 @@ export default function Fonts() {
                         name="name"
                         value={input.name}
                         sx={{ width: '40%', mr: 2 }}
-                        onChange={event => handleCharChanges(index, event)}
+                        onChange={(event) => handleCharChanges(index, event)}
                       />
 
                       <FormControl>
@@ -405,7 +404,7 @@ export default function Fonts() {
                           label="Possíveis Valores"
                           name="domain"
                           value={input.domain}
-                          onChange={event => handleCharChanges(index, event)}
+                          onChange={(event) => handleCharChanges(index, event)}
                         >
                           <MenuItem value="numeric">Apenas números</MenuItem>
                           <MenuItem value="textual">Apenas letras</MenuItem>
@@ -413,24 +412,23 @@ export default function Fonts() {
                         </Select>
                       </FormControl>
                     </Grid>
-                  );
-                })}
-                <Grid container
-                  direction="row"
-                  justifyContent="flex-start"
-                  alignItems="center">
-                  <Fab color="primary" aria-label="add" sx={{ ml: 18, mt: 2 }} onClick={handleClick}>
+                  ))}
+                <Grid container direction="row" justifyContent="flex-start" alignItems="center">
+                  <Fab
+                    color="primary"
+                    aria-label="add"
+                    sx={{ ml: 18, mt: 2 }}
+                    onClick={handleClick}
+                  >
                     <AddIcon />
-                  </Fab> <Typography sx={{ ml: 2, mt: 2 }}>Adicionar nova característica</Typography>
+                  </Fab>{' '}
+                  <Typography sx={{ ml: 2, mt: 2 }}>Adicionar nova característica</Typography>
                 </Grid>
-
               </Grid>
             </Grid>
-            
           </Box>
         </DialogContent>
-        <DialogActions>
-        </DialogActions>
+        <DialogActions />
       </Dialog>
       <Snackbar open={openSnack} autoHideDuration={6000} onClose={handleCloseSnack}>
         <Alert onClose={handleCloseSnack} severity="success" sx={{ width: '100%' }}>
@@ -443,12 +441,9 @@ export default function Fonts() {
           Fonte apagada com sucesso!
         </Alert>
       </Snackbar>
-      <Backdrop
-              sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-              open={loading}
-            >
-              <CircularProgress color="inherit" />
-        </Backdrop>
+      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Paper>
   );
 }
