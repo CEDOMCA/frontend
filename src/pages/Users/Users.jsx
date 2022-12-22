@@ -1,72 +1,70 @@
-import * as React from 'react';
-import { 
-  AppBar,
-  Box, 
-  Toolbar, 
-  Typography, 
-  Button, 
-  MenuItem, 
-  Paper, 
-  Grid, 
-  TextField, 
-  List, 
-  Dialog, 
-  DialogContent, 
-  Slide, 
-  FormControl, 
-  InputLabel, 
-  Select, 
-  DialogTitle,
-  Stack
-} from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import { useState, useEffect } from "react";
-import axios from 'axios';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import SearchIcon from '@mui/icons-material/Search';
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  Typography,
+  Button,
+  MenuItem,
+  Paper,
+  Grid,
+  TextField,
+  List,
+  Dialog,
+  DialogContent,
+  Slide,
+  FormControl,
+  InputLabel,
+  Select,
+  DialogTitle,
+  Stack,
+} from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import { useNavigate } from 'react-router-dom';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import axios from 'axios';
 import { Country, State, City } from 'country-state-city';
-import { getUsers, deleteUser, updateUserId, getUserId } from '../../services/api';
 import id from 'date-fns/esm/locale/id/index.js';
+import { useState, useEffect } from 'react';
+import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ResourceListItem } from '../../components/ResourceListItem/ResourceListItem';
+import { getUsers, deleteUser, updateUserId, getUserId } from '../../services/api';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 function AdminUsers() {
-  const [searchString, setSearchString] = useState("");
+  const [searchString, setSearchString] = useState('');
   const [searchResult, setSearchResult] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
 
   const [open, setOpen] = React.useState(false);
 
   const [users, setUsers] = useState([]);
-  const [hidden, setHidden] = useState(false);
+  const [, setHidden] = useState(false);
   const [errors, setErrors] = useState({});
-  const [message, setMessage] = useState('');
+  const [, setMessage] = useState('');
   const [birthDate, setBirthDate] = useState('');
-  const [country, setCountry] = useState("");
-  const [state, setState] = useState("");
-  const [city, setCity] = useState("");
-  const [role, setRole] = useState("");
-  const [form, setForm] = useState({});
+  const [country, setCountry] = useState('');
+  const [state, setState] = useState('');
+  const [city, setCity] = useState('');
+  const [role, setRole] = useState('');
+  const [form] = useState({});
   const allCountry = Country.getAllCountries();
   const navigate = useNavigate();
-  const [show, setShow] = useState(false);
+  const [, setShow] = useState(false);
 
-  // vindo de fonts 
-  const [loading, setLoading] = useState(false);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [inputChars, setInputChars] = useState([
-    { name: '', domain: '' }
-  ]);
-  const [openSnack, setOpenSnack] = React.useState(false);
-  const [openSnackDelete, setOpenSnackDelete] = React.useState(false);
-  const [currentId, setCurrentId] = useState("");
+  // vindo de fonts
+  const [, setLoading] = useState(false);
+  const [name, setName] = useState('');
+  const [, setDescription] = useState('');
+  const [, setInputChars] = useState([{ name: '', domain: '' }]);
+  const [, setOpenSnack] = React.useState(false);
+  const [, setOpenSnackDelete] = React.useState(false);
+  const [currentId, setCurrentId] = useState('');
 
   //vindo de fonts
   const handleClickSnack = () => {
@@ -91,18 +89,17 @@ function AdminUsers() {
     } catch (err) {
       setHidden(false);
     }
-
   };
 
   useEffect(() => {
     document.title = 'CEDOMCA | Lista de usuários';
-    
+
     fetchUsers().then(() => setLoadingData(false));
   }, []);
 
   useEffect(() => {
     const searchedUsers = users.filter((user) =>
-      user.fullName.toLowerCase().includes(searchString.toLowerCase())
+      user.fullName.toLowerCase().includes(searchString.toLowerCase()),
     );
     setSearchResult(searchedUsers);
   }, [searchString, users]);
@@ -111,9 +108,13 @@ function AdminUsers() {
     try {
       setLoading(true);
       const { data } = await getUserId(id);
-      const countryObj = Country.getAllCountries().find((c) => c.name === data.country)
-      const stateObj = State.getStatesOfCountry(countryObj.isoCode).find((s) => s.name === data.state)
-      const cityObj = City.getCitiesOfState(countryObj.isoCode, stateObj.isoCode).find((c) => c.name === data.city)
+      const countryObj = Country.getAllCountries().find((c) => c.name === data.country);
+      const stateObj = State.getStatesOfCountry(countryObj.isoCode).find(
+        (s) => s.name === data.state,
+      );
+      const cityObj = City.getCitiesOfState(countryObj.isoCode, stateObj.isoCode).find(
+        (c) => c.name === data.city,
+      );
       setName(data.fullName);
       setBirthDate(data.birthDate);
       setCountry(countryObj);
@@ -131,7 +132,7 @@ function AdminUsers() {
     event.preventDefault();
     fetchUserId(id);
     setOpen(true);
-  }
+  };
 
   const handleSubmitUpdate = async (e, id) => {
     e.preventDefault();
@@ -143,11 +144,10 @@ function AdminUsers() {
       state: state.name,
       city: city.name,
       role: role,
-      id: id
+      id: id,
     };
     try {
-
-      const res = await updateUserId(id, data);
+      await updateUserId(id, data);
       setLoading(false);
       handleClose();
       handleClickSnack();
@@ -156,45 +156,46 @@ function AdminUsers() {
       setLoading(false);
       console.log(err);
     }
-  }
+  };
 
   const handleDeleteUser = async (id, event) => {
     event.preventDefault();
     setLoading(true);
 
     try {
-      const res = await deleteUser(id);
+      await deleteUser(id);
       setLoading(false);
       handleClickSnackDelete();
       fetchUsers();
     } catch (err) {
       setLoading(false);
     }
-  }
+  };
 
   const handleClose = () => {
     setOpen(false);
-    setName("");
-    setDescription("");
-    setInputChars([{ name: '', domain: '' }])
+    setName('');
+    setDescription('');
+    setInputChars([{ name: '', domain: '' }]);
   };
 
   const findFormErrors = () => {
-    const {
-      name, birthDate, email, password, confirmPassword,
-    } = form;
+    const { name, email, password, confirmPassword } = form;
     const newErrors = {};
     // name errors
     if (!name || name === '') newErrors.name = 'Nome obrigatório';
     // rating errors
     if (!email || email === '') newErrors.email = 'Email obrigatório';
-    else if (!email.includes('@')) newErrors.email = 'Email inválido'
+    else if (!email.includes('@')) newErrors.email = 'Email inválido';
     // comment errors
     if (!password || password === '') newErrors.password = 'Senha obrigatório';
-    else if (password.length > 18) newErrors.password = 'Senha muito longa! Sua senha deve conter entre 8 e 18 caracteres';
-    else if (password.length < 8) newErrors.password = 'Senha muito curta! Sua senha deve conter entre 8 e 18 caracteres';
+    else if (password.length > 18)
+      newErrors.password = 'Senha muito longa! Sua senha deve conter entre 8 e 18 caracteres';
+    else if (password.length < 8)
+      newErrors.password = 'Senha muito curta! Sua senha deve conter entre 8 e 18 caracteres';
 
-    if (!confirmPassword || confirmPassword === '') newErrors.confirmPassword = 'Confirmar senha obrigatório';
+    if (!confirmPassword || confirmPassword === '')
+      newErrors.confirmPassword = 'Confirmar senha obrigatório';
     else if (confirmPassword !== password) newErrors.confirmPassword = 'As senhas devem ser igual';
 
     return newErrors;
@@ -207,31 +208,29 @@ function AdminUsers() {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      console.log(newErrors)
+      console.log(newErrors);
     } else {
-      console.log(country)
-      setOpen(true)
+      console.log(country);
+      setOpen(true);
       const options = {
         fullName: name,
         role: role,
         birthdate: birthDate,
         country: country.name,
         state: state.name,
-        city: city.name, 
+        city: city.name,
         id: id,
-        
       };
       try {
-
-        const res = await axios.post('https://web-production-8fea.up.railway.app/users', options);
-        setOpen(false)
-        navigate('/', { replace: true })
+        await axios.post('https://web-production-8fea.up.railway.app/users', options);
+        setOpen(false);
+        navigate('/', { replace: true });
       } catch (err) {
-        setOpen(false)
+        setOpen(false);
         console.log(err);
         setShow(true);
         let errorMsg = err.response.data.message.toString();
-        let newErrorMsg = errorMsg.replaceAll(",", "\n\n")
+        let newErrorMsg = errorMsg.replaceAll(',', '\n\n');
         setMessage(newErrorMsg);
         setTimeout(function () {
           setShow(false);
@@ -242,35 +241,37 @@ function AdminUsers() {
 
   const buildSkeletonList = () => (
     <>
-      <ResourceListItem isLoading={loadingData}/>
-      <ResourceListItem isLoading={loadingData}/>
-      <ResourceListItem isLoading={loadingData}/>
+      <ResourceListItem isLoading={loadingData} />
+      <ResourceListItem isLoading={loadingData} />
+      <ResourceListItem isLoading={loadingData} />
     </>
   );
 
-  const buildUsersList = () => (
-    searchString === '' ? users.map((user) => (
-      <ResourceListItem 
-        primary={user.fullName}
-        secondary={user.email}
-        onClickDelete={(event) => handleDeleteUser(user.id, event)}
-        onClickUpdate={(event) => handleUpdateUser(user.id, event)}
-        isLoading={loadingData}
-      />
-    )) : searchResult.map((user) => (
-      <ResourceListItem 
-        primary={user.fullName}
-        secondary={user.email}
-        onClickDelete={(event) => handleDeleteUser(user.id, event)}
-        onClickUpdate={(event) => handleUpdateUser(user.id, event)}
-        isLoading={loadingData}
-      />
-    ))
-  )
+  const buildUsersList = () =>
+    searchString === ''
+      ? users.map((user) => (
+          <ResourceListItem
+            key={user.id}
+            primary={user.fullName}
+            secondary={user.email}
+            onClickDelete={(event) => handleDeleteUser(user.id, event)}
+            onClickUpdate={(event) => handleUpdateUser(user.id, event)}
+            isLoading={loadingData}
+          />
+        ))
+      : searchResult.map((user) => (
+          <ResourceListItem
+            key={user.id}
+            primary={user.fullName}
+            secondary={user.email}
+            onClickDelete={(event) => handleDeleteUser(user.id, event)}
+            onClickUpdate={(event) => handleUpdateUser(user.id, event)}
+            isLoading={loadingData}
+          />
+        ));
 
   return (
     <div>
-
       <Paper sx={{ maxWidth: 980, margin: 'auto', marginTop: 5, overflow: 'hidden' }}>
         <AppBar
           position="static"
@@ -279,59 +280,55 @@ function AdminUsers() {
           sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}
         >
           <Toolbar>
-            <Stack direction='row' sx={{
-              flexGrow: 1,
-            }}>
+            <Stack
+              direction="row"
+              sx={{
+                flexGrow: 1,
+              }}
+            >
               <TextField
-                  fullWidth
-                  placeholder="Pesquisar por nome do usuário"
-                  InputProps={{
-                    disableUnderline: true,
-                    sx: { fontSize: 'default' },
-                    startAdornment: (
-                      <SearchIcon color="inherit" sx={{ display: 'block' }} />
-                    )
-                  }}
-                  variant="standard"
-                  onChange={(event) => setSearchString(event.target.value)}
+                fullWidth
+                placeholder="Pesquisar por nome do usuário"
+                InputProps={{
+                  disableUnderline: true,
+                  sx: { fontSize: 'default' },
+                  startAdornment: <SearchIcon color="inherit" sx={{ display: 'block' }} />,
+                }}
+                variant="standard"
+                onChange={(event) => setSearchString(event.target.value)}
               />
             </Stack>
           </Toolbar>
         </AppBar>
-        {
-        !loadingData && users.length === 0 && 
-          <Typography variant='h6' sx={{ my: 5, mx: 2 }} color="text.secondary" align="center">
+        {!loadingData && users.length === 0 && (
+          <Typography variant="h6" sx={{ my: 5, mx: 2 }} color="text.secondary" align="center">
             {'Nenhum usuário foi cadastrado ainda :('}
           </Typography>
-      }
-      {
-        !loadingData && users.length !== 0 && searchResult.length === 0 && 
-          <Typography variant='h6' sx={{ my: 5, mx: 2 }} color="text.secondary" align="center">
+        )}
+        {!loadingData && users.length !== 0 && searchResult.length === 0 && (
+          <Typography variant="h6" sx={{ my: 5, mx: 2 }} color="text.secondary" align="center">
             {'Nenhum usuário encontrado :('}
           </Typography>
-      }
+        )}
         <List alignItems="center" sx={{ width: '100%', bgcolor: 'background.paper' }}>
           {loadingData ? buildSkeletonList() : buildUsersList()}
         </List>
         <Dialog
           open={open}
           fullWidth
-          maxWidth={"lg"}
+          maxWidth={'lg'}
           TransitionComponent={Transition}
           keepMounted
           onClose={handleClose}
           aria-describedby="alert-dialog-slide-description"
         >
           <DialogTitle>
-            <Grid container
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center">
+            <Grid container direction="row" justifyContent="space-between" alignItems="center">
               <Button onClick={handleClose}>
                 <KeyboardArrowLeft />
                 Back
               </Button>
-              {"Editar usuário"}
+              {'Editar usuário'}
             </Grid>
           </DialogTitle>
           <DialogContent>
@@ -356,7 +353,6 @@ function AdminUsers() {
                       id="fullName"
                       value={name}
                       label="Nome completo"
-                      autoFocus
                       onChange={(e) => setName(e.target.value)}
                       {...(errors.name && { error: true, helperText: errors.name })}
                     />
@@ -373,7 +369,7 @@ function AdminUsers() {
                     </LocalizationProvider>
                   </Grid>
 
-                  <Grid item xs={4} >
+                  <Grid item xs={4}>
                     <FormControl>
                       <InputLabel id="demo-simple-select-outlined-label">País *</InputLabel>
                       <Select
@@ -382,9 +378,8 @@ function AdminUsers() {
                         id="demo-simple-select-outlined"
                         label="País * "
                         value={country}
-                        onChange={(e) => 
-                        {
-                          console.log('aqui', e.target.value)
+                        onChange={(e) => {
+                          console.log('aqui', e.target.value);
                           setCountry(e.target.value);
                         }}
                       >
@@ -392,14 +387,14 @@ function AdminUsers() {
                           <em>-</em>
                         </MenuItem>
                         {allCountry.map((country) => (
-                          <MenuItem value={country}>
+                          <MenuItem key={country.isoCode} value={country}>
                             {country.name}
                           </MenuItem>
                         ))}
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={4} >
+                  <Grid item xs={4}>
                     <FormControl>
                       <InputLabel id="demo-simple-select-outlined-label">Estado *</InputLabel>
                       <Select
@@ -416,14 +411,14 @@ function AdminUsers() {
                           <em>-</em>
                         </MenuItem>
                         {State.getStatesOfCountry(country.isoCode).map((state) => (
-                          <MenuItem value={state}>
+                          <MenuItem key={state.isoCode} value={state}>
                             {state.name}
                           </MenuItem>
                         ))}
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={4} >
+                  <Grid item xs={4}>
                     <FormControl>
                       <InputLabel id="demo-simple-select-outlined-label">Cidade *</InputLabel>
                       <Select
@@ -438,7 +433,7 @@ function AdminUsers() {
                           <em>-</em>
                         </MenuItem>
                         {City.getCitiesOfState(country.isoCode, state.isoCode).map((city) => (
-                          <MenuItem value={city}>
+                          <MenuItem key={city.name} value={city}>
                             {city.name}
                           </MenuItem>
                         ))}
@@ -456,14 +451,11 @@ function AdminUsers() {
                         value={role}
                         onChange={(e) => setRole(e.target.value)}
                       >
-                        <MenuItem value="visitor">
-                          Visitante
-                        </MenuItem>
+                        <MenuItem value="visitor">Visitante</MenuItem>
                         <MenuItem value="admin">Adiministrador</MenuItem>
                         <MenuItem value="super">Super</MenuItem>
                       </Select>
                     </FormControl>
-
                   </Grid>
                 </Grid>
                 <Button
@@ -471,20 +463,16 @@ function AdminUsers() {
                   fullWidth
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
-                  onClick={event => handleSubmitUpdate(event, currentId)}
+                  onClick={(event) => handleSubmitUpdate(event, currentId)}
                 >
                   Confirmar edição
                 </Button>
               </Box>
-
             </Box>
           </DialogContent>
         </Dialog>
       </Paper>
-
     </div>
-
-
   );
 }
 export default AdminUsers;

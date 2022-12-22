@@ -1,43 +1,43 @@
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
+import Avatar from '@mui/material/Avatar';
+import Backdrop from '@mui/material/Backdrop';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Collapse from '@mui/material/Collapse';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import dayjs from 'dayjs';
+import CssBaseline from '@mui/material/CssBaseline';
 import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
+import Link from '@mui/material/Link';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { useState } from 'react';
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
-import Alert from '@mui/material/Alert';
-import Collapse from '@mui/material/Collapse';
 import { Country, State, City } from 'country-state-city';
+import dayjs from 'dayjs';
+import { useState } from 'react';
+import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createUser } from '../../services/api';
 import { AuthContext } from '../../contexts/auth';
+import { createUser } from '../../services/api';
 
 const theme = createTheme();
 
 export default function SignUp() {
   const role = 'visitor';
   const [message, setMessage] = useState('');
-  const [birthdate, setBirthDate] = useState('');
-  const [country, setCountry] = useState("");
-  const [state, setState] = useState("");
-  const [city, setCity] = useState("");
-  const [date, setDate] = React.useState(dayjs('2000-08-18T21:11:54'));
+  const [, ] = useState('');
+  const [country, setCountry] = useState('');
+  const [state, setState] = useState('');
+  const [city, setCity] = useState('');
+  const [, ] = React.useState(dayjs('2000-08-18T21:11:54'));
   const [form, setForm] = useState({});
   const [errors, setErrors] = useState({});
   const [open, setOpen] = React.useState(false);
@@ -50,7 +50,7 @@ export default function SignUp() {
     if (authenticated) {
       navigate('/main', { replace: true });
     }
-  }, [authenticated])
+  }, [authenticated]);
 
   const setField = (field, value) => {
     setForm({
@@ -67,21 +67,22 @@ export default function SignUp() {
   };
 
   const findFormErrors = () => {
-    const {
-      name, birthDate, email, password, confirmPassword,
-    } = form;
+    const { name,  email, password, confirmPassword } = form;
     const newErrors = {};
     // name errors
     if (!name || name === '') newErrors.name = 'Nome obrigatório';
     // rating errors
     if (!email || email === '') newErrors.email = 'Email obrigatório';
-    else if (!email.includes('@')) newErrors.email = 'Email inválido'
+    else if (!email.includes('@')) newErrors.email = 'Email inválido';
     // comment errors
     if (!password || password === '') newErrors.password = 'Senha obrigatório';
-    else if (password.length > 18) newErrors.password = 'Senha muito longa! Sua senha deve conter entre 8 e 18 caracteres';
-    else if (password.length < 8) newErrors.password = 'Senha muito curta! Sua senha deve conter entre 8 e 18 caracteres';
+    else if (password.length > 18)
+      newErrors.password = 'Senha muito longa! Sua senha deve conter entre 8 e 18 caracteres';
+    else if (password.length < 8)
+      newErrors.password = 'Senha muito curta! Sua senha deve conter entre 8 e 18 caracteres';
 
-    if (!confirmPassword || confirmPassword === '') newErrors.confirmPassword = 'Confirmar senha obrigatório';
+    if (!confirmPassword || confirmPassword === '')
+      newErrors.confirmPassword = 'Confirmar senha obrigatório';
     else if (confirmPassword !== password) newErrors.confirmPassword = 'As senhas devem ser igual';
 
     return newErrors;
@@ -94,10 +95,10 @@ export default function SignUp() {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      console.log(newErrors)
+      console.log(newErrors);
     } else {
-      console.log(country)
-      setOpen(true)
+      console.log(country);
+      setOpen(true);
       const options = {
         fullName: form.name,
         birthDate: form.birthDate,
@@ -110,14 +111,14 @@ export default function SignUp() {
       };
       try {
         await createUser(options);
-        setOpen(false)
-        navigate('/', { replace: true })
+        setOpen(false);
+        navigate('/', { replace: true });
       } catch (err) {
-        setOpen(false)
+        setOpen(false);
         console.log(err);
         setShow(true);
         let errorMsg = err.response.data.message.toString();
-        let newErrorMsg = errorMsg.replaceAll(",", "\n\n")
+        let newErrorMsg = errorMsg.replaceAll(',', '\n\n');
         setMessage(newErrorMsg);
         setTimeout(function () {
           setShow(false);
@@ -145,7 +146,9 @@ export default function SignUp() {
             Cadastre sua conta
           </Typography>
           <Collapse in={show}>
-            <Alert severity="error"><p>{message}</p></Alert>
+            <Alert severity="error">
+              <p>{message}</p>
+            </Alert>
           </Collapse>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2} columns={12}>
@@ -157,7 +160,6 @@ export default function SignUp() {
                   fullWidth
                   id="fullName"
                   label="Nome completo"
-                  autoFocus
                   onChange={(e) => setField('name', e.target.value)}
                   {...(errors.name && { error: true, helperText: errors.name })}
                 />
@@ -185,7 +187,7 @@ export default function SignUp() {
                   />
                 </LocalizationProvider>
               </Grid>
-              <Grid item xs={4} >
+              <Grid item xs={4}>
                 <FormControl>
                   <InputLabel id="demo-simple-select-label">País</InputLabel>
                   <Select
@@ -200,14 +202,12 @@ export default function SignUp() {
                       <em>-</em>
                     </MenuItem>
                     {allCountry.map((country) => (
-                      <MenuItem value={country}>
-                        {country.name}
-                      </MenuItem>
+                      <MenuItem key={country.isoCode} value={country}>{country.name}</MenuItem>
                     ))}
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={4} >
+              <Grid item xs={4}>
                 <FormControl>
                   <InputLabel id="demo-simple-select-label">Estado</InputLabel>
                   <Select
@@ -222,14 +222,12 @@ export default function SignUp() {
                       <em>-</em>
                     </MenuItem>
                     {State.getStatesOfCountry(country.isoCode).map((state) => (
-                      <MenuItem value={state}>
-                        {state.name}
-                      </MenuItem>
+                      <MenuItem key={state.isoCode} value={state}>{state.name}</MenuItem>
                     ))}
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={4} >
+              <Grid item xs={4}>
                 <FormControl>
                   <InputLabel id="select">Cidade</InputLabel>
                   <Select
@@ -244,9 +242,7 @@ export default function SignUp() {
                       <em>-</em>
                     </MenuItem>
                     {City.getCitiesOfState(country.isoCode, state.isoCode).map((city) => (
-                      <MenuItem value={city}>
-                        {city.name}
-                      </MenuItem>
+                      <MenuItem key={city.name} value={city}>{city.name}</MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -273,16 +269,14 @@ export default function SignUp() {
                   type="password"
                   id="confirmPassword"
                   onChange={(e) => setField('confirmPassword', e.target.value)}
-                  {...(errors.confirmPassword && { error: true, helperText: errors.confirmPassword })}
+                  {...(errors.confirmPassword && {
+                    error: true,
+                    helperText: errors.confirmPassword,
+                  })}
                 />
               </Grid>
             </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
               Cadastrar-se
             </Button>
             <Backdrop
