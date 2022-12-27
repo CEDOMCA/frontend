@@ -1,4 +1,8 @@
 {
+    "files.exclude": {
+        "dist": true,
+        "node_modules": true
+    },
     "editor.formatOnSave": true,
     "prettier.requireConfig": true,
     "editor.codeActionsOnSave": {
