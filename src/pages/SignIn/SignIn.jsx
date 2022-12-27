@@ -1,4 +1,5 @@
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { Stack } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Avatar from '@mui/material/Avatar';
 import Backdrop from '@mui/material/Backdrop';
@@ -11,7 +12,7 @@ import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import * as React from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../contexts/auth';
 import { createSession } from '../../services/api';
@@ -19,14 +20,14 @@ import { createSession } from '../../services/api';
 const theme = createTheme();
 
 export default function SignIn() {
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [error, setError] = React.useState('');
-  const [open, setOpen] = React.useState(false);
-
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const { authenticated, setId } = React.useContext(AuthContext);
-  React.useEffect(() => {
+  const { authenticated, setId } = useContext(AuthContext);
+
+  useEffect(() => {
     if (authenticated) {
       navigate('/main', { replace: true });
     }
@@ -98,7 +99,7 @@ export default function SignIn() {
                 setError('');
               }}
             />
-            {error ? <Alert severity="warning">{error}</Alert> : null}
+            {error && <Alert severity="warning">{error}</Alert>}
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
               Entrar
             </Button>
@@ -108,9 +109,14 @@ export default function SignIn() {
             >
               <CircularProgress color="inherit" />
             </Backdrop>
-            <Link href="/signup" variant="body2">
-              Não tem uma conta? Cadastre-se
-            </Link>
+            <Stack direction='column'>
+              <Link href="/signup" variant="body2">
+                Não tem uma conta? Cadastre-se
+              </Link>
+              <Link href="/recover-password" variant="body2">
+                Esqueceu sua senha? 
+              </Link>
+            </Stack>
           </Box>
         </Box>
       </Container>
