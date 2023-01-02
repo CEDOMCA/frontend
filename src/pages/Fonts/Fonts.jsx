@@ -25,10 +25,15 @@ import {
   CircularProgress,
   Snackbar,
   Stack,
+  IconButton,
 } from '@mui/material';
-import MuiAlert from '@mui/material/Alert';
-import * as React from 'react';
 import { useState, useEffect } from 'react';
+import * as React from 'react';
+import MuiAlert from '@mui/material/Alert';
+import SearchIcon from '@mui/icons-material/Search';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import AddIcon from '@mui/icons-material/Add';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import { ResourceListItem } from '../../components/ResourceListItem/ResourceListItem';
 import { getFonts, deleteFont, getFontId, updateFontId, createFont } from '../../services/api';
 
@@ -49,6 +54,8 @@ export default function Fonts() {
   const [loading, setLoading] = useState(false);
 
   const [open, setOpen] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [currentDeleteId, setCurrentDeleteId] = useState("");
   const [fonts, setFonts] = useState([]);
   const [, setHidden] = useState(false);
   const [name, setName] = useState('');
@@ -123,10 +130,16 @@ export default function Fonts() {
 
   const handleClose = () => {
     setOpen(false);
-    setName('');
-    setDescription('');
-    setInputChars([{ name: '', domain: '' }]);
+    setName("");
+    setDescription("");
+    setInputChars([{ name: '', domain: '' }])
+    setIsUpdate(false);
   };
+
+  const handleCloseConfirm = () => {
+    setOpenConfirm(false);
+    setCurrentDeleteId("");
+  }
 
   const handleCharChanges = (index, event) => {
     let data = [...inputChars];
@@ -136,6 +149,8 @@ export default function Fonts() {
 
   const handleDeleteFont = async (id, event) => {
     event.preventDefault();
+    setCurrentDeleteId("");
+    setOpenConfirm(false);
     setLoading(true);
 
     try {
@@ -143,6 +158,7 @@ export default function Fonts() {
       setLoading(false);
       handleClickSnackDelete();
       fetchFonts();
+      
     } catch (err) {
       setLoading(false);
     }
@@ -188,8 +204,9 @@ export default function Fonts() {
       handleClose();
       handleClickSnack();
       fetchFonts();
-      setName('');
-      setDescription('');
+      setName("");
+      setDescription("");
+      setIsUpdate(false);
     } catch (err) {
       setLoading(false);
       console.log(err);
@@ -248,6 +265,16 @@ export default function Fonts() {
             isLoading={loadingData}
           />
         ));
+
+  const removeCharField = (index) => {
+    setInputChars(inputs => inputs.filter((el, i) => i !== index))
+  };
+
+  const showConfirmDelte = (index, event) => {
+    event.preventDefault();
+    setOpenConfirm(true);
+    setCurrentDeleteId(index);
+  };
 
   return (
     <Paper sx={{ maxWidth: 980, margin: 'auto', marginTop: 5, overflow: 'hidden' }}>
@@ -317,18 +344,15 @@ export default function Fonts() {
           <Grid container direction="row" justifyContent="space-between" alignItems="center">
             <Button onClick={handleClose}>
               <KeyboardArrowLeft />
-              Back
+              Voltar
             </Button>
-            {'Cadastrar nova fonte'}
-            {isUpdate ? (
-              <Button variant="contained" onClick={(event) => handleSubmitUpdate(event, currentId)}>
-                Editar
-              </Button>
-            ) : (
-              <Button variant="contained" onClick={handleSubmit}>
-                Cadastrar
-              </Button>
-            )}
+            {isUpdate ? "Editar fonte" : "Cadastrar fonte"}
+            {isUpdate ? (<Button variant="contained" onClick={event => handleSubmitUpdate(event, currentId)}>
+              Editar
+            </Button>) : (<Button variant="contained" onClick={handleSubmit}>
+              Cadastrar
+            </Button>)}
+            
           </Grid>
         </DialogTitle>
         <DialogContent>
@@ -408,18 +432,25 @@ export default function Fonts() {
                         >
                           <MenuItem value="numeric">Apenas números</MenuItem>
                           <MenuItem value="textual">Apenas letras</MenuItem>
-                          <MenuItem value="alphanumeric">Apenas letras e números</MenuItem>
+                          <MenuItem value="alphanumeric">Letras e números</MenuItem>
                         </Select>
                       </FormControl>
+                      {
+                        inputChars.length > 1 ? 
+                        <IconButton sx={{ml:1}} onClick={e => removeCharField(index)}>
+                          <RemoveCircleIcon color="error"></RemoveCircleIcon>
+                        </IconButton> :
+                        <></>
+                      }
+                      
                     </Grid>
-                  ))}
-                <Grid container direction="row" justifyContent="flex-start" alignItems="center">
-                  <Fab
-                    color="primary"
-                    aria-label="add"
-                    sx={{ ml: 18, mt: 2 }}
-                    onClick={handleClick}
-                  >
+                  );
+                })}
+                <Grid container
+                  direction="row"
+                  justifyContent="flex-start"
+                  alignItems="center">
+                  <Fab color="primary" aria-label="add" sx={{ ml: inputChars.length > 1 ? 15 : 18, mt: 2 }} onClick={handleClick}>
                     <AddIcon />
                   </Fab>{' '}
                   <Typography sx={{ ml: 2, mt: 2 }}>Adicionar nova característica</Typography>
@@ -429,6 +460,21 @@ export default function Fonts() {
           </Box>
         </DialogContent>
         <DialogActions />
+      </Dialog>
+      <Dialog
+        open={openConfirm}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleClose}
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle>{"Deseja excluir esta fonte?"}</DialogTitle>
+        <DialogContent>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirm} >Cancelar</Button>
+          <Button onClick={(event) => handleDeleteFont(currentDeleteId,event)} color="error">Excluir</Button>
+        </DialogActions>
       </Dialog>
       <Snackbar open={openSnack} autoHideDuration={6000} onClose={handleCloseSnack}>
         <Alert onClose={handleCloseSnack} severity="success" sx={{ width: '100%' }}>
