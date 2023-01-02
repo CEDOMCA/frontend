@@ -1,0 +1,64 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:jsx-a11y/recommended",
+    "prettier"
+  ],
+  "rules": {
+    "react/prop-types": "off",
+    "react/jsx-uses-react": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/self-closing-comp": ["error", { "component": true, "html": true }],
+    "arrow-body-style": ["error", "as-needed"],
+    "autofix/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "destructuredArrayIgnorePattern": "^_"
+      }
+    ],
+    "import/order": [
+      "error",
+      {        
+        "groups": [
+          "builtin",
+          "external",
+          "parent",
+          "sibling",
+          "index",
+          "object",   
+          "type"
+        ],
+        "pathGroups": [
+          {
+            "pattern": "@/**/**",
+            "group": "parent",
+            "position": "before"
+          }
+        ],
+        "alphabetize": { "order": "asc" }
+      }
+    ]
+  },
+  "plugins": ["react", "import", "jsx-a11y", "autofix"],
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "env": {
+    "es6": true,
+    "browser": true,
+    "jest": true,
+    "node": true
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
+}

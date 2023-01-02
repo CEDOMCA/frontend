@@ -1,0 +1,11 @@
+{
+    "files.exclude": {
+        "build": true,
+        "node_modules": true
+    },
+    "editor.formatOnSave": true,
+    "prettier.requireConfig": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    }
+}

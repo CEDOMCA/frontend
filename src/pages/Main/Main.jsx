@@ -1,8 +1,5 @@
-import React from "react";
-import { Typography } from "@mui/material";
+import { Typography } from '@mui/material';
 
 export default function Main() {
-    return (
-        <Typography>Hello world</Typography>
-    )
+  return <Typography>Hello world</Typography>;
 }
