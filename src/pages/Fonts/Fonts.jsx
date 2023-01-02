@@ -1,5 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import SearchIcon from '@mui/icons-material/Search';
 import {
   AppBar,
@@ -27,13 +28,9 @@ import {
   Stack,
   IconButton,
 } from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
 import { useState, useEffect } from 'react';
 import * as React from 'react';
-import MuiAlert from '@mui/material/Alert';
-import SearchIcon from '@mui/icons-material/Search';
-import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
-import AddIcon from '@mui/icons-material/Add';
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import { ResourceListItem } from '../../components/ResourceListItem/ResourceListItem';
 import { getFonts, deleteFont, getFontId, updateFontId, createFont } from '../../services/api';
 
@@ -158,7 +155,7 @@ export default function Fonts() {
       setLoading(false);
       handleClickSnackDelete();
       fetchFonts();
-      
+
     } catch (err) {
       setLoading(false);
     }
@@ -246,34 +243,28 @@ export default function Fonts() {
   const buildFontsList = () =>
     searchString === ''
       ? fonts.map((font) => (
-          <ResourceListItem
-            key={font.id}
-            primary={font.name}
-            secondary={font.description}
-            onClickDelete={(event) => handleDeleteFont(font.id, event)}
-            onClickUpdate={(event) => handleUpdateFont(font.id, event)}
-            isLoading={loadingData}
-          />
-        ))
+        <ResourceListItem
+          key={font.id}
+          primary={font.name}
+          secondary={font.description}
+          onClickDelete={(event) => handleDeleteFont(font.id, event)}
+          onClickUpdate={(event) => handleUpdateFont(font.id, event)}
+          isLoading={loadingData}
+        />
+      ))
       : searchResult.map((font) => (
-          <ResourceListItem
-            key={font.id}
-            primary={font.name}
-            secondary={font.description}
-            onClickDelete={(event) => handleDeleteFont(font.id, event)}
-            onClickUpdate={(event) => handleUpdateFont(font.id, event)}
-            isLoading={loadingData}
-          />
-        ));
+        <ResourceListItem
+          key={font.id}
+          primary={font.name}
+          secondary={font.description}
+          onClickDelete={(event) => handleDeleteFont(font.id, event)}
+          onClickUpdate={(event) => handleUpdateFont(font.id, event)}
+          isLoading={loadingData}
+        />
+      ));
 
   const removeCharField = (index) => {
     setInputChars(inputs => inputs.filter((el, i) => i !== index))
-  };
-
-  const showConfirmDelte = (index, event) => {
-    event.preventDefault();
-    setOpenConfirm(true);
-    setCurrentDeleteId(index);
   };
 
   return (
@@ -352,7 +343,7 @@ export default function Fonts() {
             </Button>) : (<Button variant="contained" onClick={handleSubmit}>
               Cadastrar
             </Button>)}
-            
+
           </Grid>
         </DialogTitle>
         <DialogContent>
@@ -400,52 +391,52 @@ export default function Fonts() {
 
               <Grid item xs={11} sx={{ mt: 2 }}>
                 {inputChars.map((input, index) => (
-                    <Grid
-                      key={index}
-                      container
-                      spacing={2}
-                      direction="row"
-                      justifyContent="center"
-                      alignItems="center"
-                      sx={{ mt: 2 }}
-                    >
-                      <TextField
-                        required
-                        id="charName"
-                        label="Nome da característica"
-                        name="name"
-                        value={input.name}
-                        sx={{ width: '40%', mr: 2 }}
-                        onChange={(event) => handleCharChanges(index, event)}
-                      />
+                  <Grid
+                    key={index}
+                    container
+                    spacing={2}
+                    direction="row"
+                    justifyContent="center"
+                    alignItems="center"
+                    sx={{ mt: 2 }}
+                  >
+                    <TextField
+                      required
+                      id="charName"
+                      label="Nome da característica"
+                      name="name"
+                      value={input.name}
+                      sx={{ width: '40%', mr: 2 }}
+                      onChange={(event) => handleCharChanges(index, event)}
+                    />
 
-                      <FormControl>
-                        <InputLabel id="demo-simple-select-label">Possíveis Valores</InputLabel>
-                        <Select
-                          sx={{ width: 300 }}
-                          labelId="demo-simple-select-outlined-label"
-                          id="demo-simple-select-outlined"
-                          label="Possíveis Valores"
-                          name="domain"
-                          value={input.domain}
-                          onChange={(event) => handleCharChanges(index, event)}
-                        >
-                          <MenuItem value="numeric">Apenas números</MenuItem>
-                          <MenuItem value="textual">Apenas letras</MenuItem>
-                          <MenuItem value="alphanumeric">Letras e números</MenuItem>
-                        </Select>
-                      </FormControl>
-                      {
-                        inputChars.length > 1 ? 
-                        <IconButton sx={{ml:1}} onClick={e => removeCharField(index)}>
-                          <RemoveCircleIcon color="error"></RemoveCircleIcon>
+                    <FormControl>
+                      <InputLabel id="demo-simple-select-label">Possíveis Valores</InputLabel>
+                      <Select
+                        sx={{ width: 300 }}
+                        labelId="demo-simple-select-outlined-label"
+                        id="demo-simple-select-outlined"
+                        label="Possíveis Valores"
+                        name="domain"
+                        value={input.domain}
+                        onChange={(event) => handleCharChanges(index, event)}
+                      >
+                        <MenuItem value="numeric">Apenas números</MenuItem>
+                        <MenuItem value="textual">Apenas letras</MenuItem>
+                        <MenuItem value="alphanumeric">Letras e números</MenuItem>
+                      </Select>
+                    </FormControl>
+                    {
+                      inputChars.length > 1 ?
+                        <IconButton sx={{ ml: 1 }} onClick={() => removeCharField(index)}>
+                          <RemoveCircleIcon color="error" />
                         </IconButton> :
                         <></>
-                      }
-                      
-                    </Grid>
-                  );
-                })}
+                    }
+
+                  </Grid>
+                )
+                )}
                 <Grid container
                   direction="row"
                   justifyContent="flex-start"
@@ -469,11 +460,10 @@ export default function Fonts() {
         aria-describedby="alert-dialog-slide-description"
       >
         <DialogTitle>{"Deseja excluir esta fonte?"}</DialogTitle>
-        <DialogContent>
-        </DialogContent>
+        <DialogContent />
         <DialogActions>
           <Button onClick={handleCloseConfirm} >Cancelar</Button>
-          <Button onClick={(event) => handleDeleteFont(currentDeleteId,event)} color="error">Excluir</Button>
+          <Button onClick={(event) => handleDeleteFont(currentDeleteId, event)} color="error">Excluir</Button>
         </DialogActions>
       </Dialog>
       <Snackbar open={openSnack} autoHideDuration={6000} onClose={handleCloseSnack}>
