@@ -23,7 +23,7 @@ export const TheNavBarTabs = () => {
       textColor="inherit"
       indicatorColor="secondary"
     >
-      <Tab label="Obras" component={Link} to="/" />
+      <Tab label="Obras" component={Link} to="/arts" />
       <Tab label="Fontes" component={Link} to="/fonts" />
       <Tab label="Usuários" component={Link} to="/users" />
     </Tabs>
