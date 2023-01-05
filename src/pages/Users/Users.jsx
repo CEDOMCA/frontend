@@ -488,7 +488,7 @@ function AdminUsers() {
                   sx={{ mt: 3, mb: 2 }}
                   onClick={(event) => handleSubmitUpdate(event, currentId)}
                 >
-                  Confirmar edição
+                  Confirmar
                 </Button>
               </Box>
             </Box>
