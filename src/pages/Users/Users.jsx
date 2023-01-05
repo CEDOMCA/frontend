@@ -329,6 +329,10 @@ function AdminUsers() {
                 Voltar
               </Button>
               {'Editar usuário'}
+              <Grid>
+                {' '}
+              </Grid>
+
             </Grid>
           </DialogTitle>
           <DialogContent>
