@@ -250,25 +250,25 @@ function AdminUsers() {
   const buildUsersList = () =>
     searchString === ''
       ? users.map((user) => (
-          <ResourceListItem
-            key={user.id}
-            primary={user.fullName}
-            secondary={user.email}
-            onClickDelete={(event) => handleDeleteUser(user.id, event)}
-            onClickUpdate={(event) => handleUpdateUser(user.id, event)}
-            isLoading={loadingData}
-          />
-        ))
+        <ResourceListItem
+          key={user.id}
+          primary={user.fullName}
+          secondary={user.email}
+          onClickDelete={(event) => handleDeleteUser(user.id, event)}
+          onClickUpdate={(event) => handleUpdateUser(user.id, event)}
+          isLoading={loadingData}
+        />
+      ))
       : searchResult.map((user) => (
-          <ResourceListItem
-            key={user.id}
-            primary={user.fullName}
-            secondary={user.email}
-            onClickDelete={(event) => handleDeleteUser(user.id, event)}
-            onClickUpdate={(event) => handleUpdateUser(user.id, event)}
-            isLoading={loadingData}
-          />
-        ));
+        <ResourceListItem
+          key={user.id}
+          primary={user.fullName}
+          secondary={user.email}
+          onClickDelete={(event) => handleDeleteUser(user.id, event)}
+          onClickUpdate={(event) => handleUpdateUser(user.id, event)}
+          isLoading={loadingData}
+        />
+      ));
 
   return (
     <div>
@@ -326,7 +326,7 @@ function AdminUsers() {
             <Grid container direction="row" justifyContent="space-between" alignItems="center">
               <Button onClick={handleClose}>
                 <KeyboardArrowLeft />
-                Back
+                Voltar
               </Button>
               {'Editar usuário'}
             </Grid>
