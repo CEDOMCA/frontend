@@ -13,6 +13,7 @@ import {
   List,
   Dialog,
   DialogContent,
+  DialogActions,
   Slide,
   FormControl,
   InputLabel,
@@ -66,6 +67,9 @@ function AdminUsers() {
   const [, setOpenSnackDelete] = React.useState(false);
   const [currentId, setCurrentId] = useState('');
 
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [currentDeleteId, setCurrentDeleteId] = useState("");
+
   //vindo de fonts
   const handleClickSnack = () => {
     setOpenSnack(true);
@@ -74,6 +78,11 @@ function AdminUsers() {
   const handleClickSnackDelete = () => {
     setOpenSnackDelete(true);
   };
+
+  const handleCloseConfirm = () => {
+    setOpenConfirm(false);
+    setCurrentDeleteId("");
+  }
 
   const fetchUsers = async () => {
     try {
@@ -161,6 +170,8 @@ function AdminUsers() {
   const handleDeleteUser = async (id, event) => {
     event.preventDefault();
     setLoading(true);
+    setCurrentDeleteId("");
+    setOpenConfirm(false);
 
     try {
       await deleteUser(id);
@@ -254,7 +265,7 @@ function AdminUsers() {
           key={user.id}
           primary={user.fullName}
           secondary={user.email}
-          onClickDelete={(event) => handleDeleteUser(user.id, event)}
+          onClickDelete={(event) => showConfirmDelte(user.id, event)}
           onClickUpdate={(event) => handleUpdateUser(user.id, event)}
           isLoading={loadingData}
         />
@@ -264,11 +275,18 @@ function AdminUsers() {
           key={user.id}
           primary={user.fullName}
           secondary={user.email}
-          onClickDelete={(event) => handleDeleteUser(user.id, event)}
+          onClickDelete={(event) => showConfirmDelte(user.id, event)}
           onClickUpdate={(event) => handleUpdateUser(user.id, event)}
           isLoading={loadingData}
         />
       ));
+
+  const showConfirmDelte = (index, event) => {
+    event.preventDefault();
+    setOpenConfirm(true);
+    setCurrentDeleteId(index);
+  };
+
 
   return (
     <div>
@@ -313,6 +331,7 @@ function AdminUsers() {
         <List alignItems="center" sx={{ width: '100%', bgcolor: 'background.paper' }}>
           {loadingData ? buildSkeletonList() : buildUsersList()}
         </List>
+
         <Dialog
           open={open}
           fullWidth
@@ -474,6 +493,20 @@ function AdminUsers() {
               </Box>
             </Box>
           </DialogContent>
+        </Dialog>
+        <Dialog
+          open={openConfirm}
+          TransitionComponent={Transition}
+          keepMounted
+          onClose={handleClose}
+          aria-describedby="alert-dialog-slide-description"
+        >
+          <DialogTitle>{"Deseja excluir este usuário?"}</DialogTitle>
+          <DialogContent />
+          <DialogActions>
+            <Button onClick={handleCloseConfirm} >Cancelar</Button>
+            <Button onClick={(event) => handleDeleteUser(currentDeleteId, event)} color="error">Excluir</Button>
+          </DialogActions>
         </Dialog>
       </Paper>
     </div>
