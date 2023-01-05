@@ -101,7 +101,7 @@ export default function Arts() {
                             placeholder="Pesquisar por obras"
                             InputProps={{
                                 disableUnderline: true,
-                                sx: { artSize: 'default' },
+                                sx: { fontSize: 'default' },
                                 startAdornment: <SearchIcon color="inherit" sx={{ display: 'block' }} />,
                             }}
                             variant="standard"
