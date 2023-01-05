@@ -29,3 +29,5 @@ export const getFontId = async (id) => api.get(`/fonts/${id}`);
 export const updateFontId = async (id, data) => api.put(`/fonts/${id}`, data);
 
 export const createFont = async (data) => api.post('/fonts', data);
+
+export const getArts = async () => api.get('/artworks');
