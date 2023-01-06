@@ -8,11 +8,31 @@ import {
     TextField,
     Button,
     Typography,
-    List
+    List,
+    Backdrop,
+    CircularProgress,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Slide,
+    Snackbar,
+
+
 } from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
 import { useState, useEffect } from 'react';
+import * as React from 'react';
 import { ResourceListItem } from '../../components/ResourceListItem/ResourceListItem';
-import { getArts } from '../../services/api';
+import { getArts, deleteArt } from '../../services/api';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
 export default function Arts() {
     const [searchString, setSearchString] = useState('');
@@ -20,6 +40,28 @@ export default function Arts() {
     const [, setHidden] = useState(false);
     const [arts, setArts] = useState([]);
     const [loadingData, setLoadingData] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [openConfirm, setOpenConfirm] = useState(false);
+    const [currentDeleteId, setCurrentDeleteId] = useState("");
+    const [openSnackDelete, setOpenSnackDelete] = React.useState(false);
+    //const [open, setOpen] = useState(false);
+
+    const handleDeleteArt = async (id, event) => {
+        event.preventDefault();
+        setCurrentDeleteId("");
+        setOpenConfirm(false);
+        setLoading(true);
+
+        try {
+            await deleteArt(id);
+            setLoading(false);
+            handleClickSnackDelete();
+            fetchArts();
+
+        } catch (err) {
+            setLoading(false);
+        }
+    };
 
     const fetchArts = async () => {
         try {
@@ -50,6 +92,29 @@ export default function Arts() {
         setSearchResult(filteredArts);
     }, [searchString, arts]);
 
+    const handleCloseConfirm = () => {
+        setOpenConfirm(false);
+        setCurrentDeleteId("");
+    }
+
+    const showConfirmDelete = (index, event) => {
+        event.preventDefault();
+        setOpenConfirm(true);
+        setCurrentDeleteId(index);
+    };
+
+    const handleClickSnackDelete = () => {
+        setOpenSnackDelete(true);
+    };
+
+    const handleCloseSnackDelete = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpenSnackDelete(false);
+    };
+
     const buildSkeletonList = () => (
         <>
             <ResourceListItem isLoading={loadingData} />
@@ -65,7 +130,7 @@ export default function Arts() {
                     key={art.id}
                     primary={art.title}
                     secondary={art.font}
-                    //onClickDelete={(event) => handleDeleteArt(art.id, event)}
+                    onClickDelete={(event) => showConfirmDelete(art.id, event)}
                     //onClickUpdate={(event) => handleUpdateArt(art.id, event)}
                     isLoading={loadingData}
                 />
@@ -75,7 +140,7 @@ export default function Arts() {
                     key={art.id}
                     primary={art.title}
                     secondary={art.font}
-                    //onClickDelete={(event) => handleDeleteArt(art.id, event)}
+                    onClickDelete={(event) => showConfirmDelete(art.id, event)}
                     //onClickUpdate={(event) => handleUpdateArt(art.id, event)}
                     isLoading={loadingData}
                 />
@@ -136,6 +201,29 @@ export default function Arts() {
             <List alignItems="center" sx={{ width: '100%', bgcolor: 'background.paper' }}>
                 {loadingData ? buildSkeletonList() : buildArtsList()}
             </List>
+            <Dialog
+                open={openConfirm}
+                TransitionComponent={Transition}
+                keepMounted
+                onClose={handleCloseConfirm}
+                aria-describedby="alert-dialog-slide-description"
+            >
+                <DialogTitle>{"Deseja excluir esta fonte?"}</DialogTitle>
+                <DialogContent />
+                <DialogActions>
+                    <Button onClick={handleCloseConfirm} >Cancelar</Button>
+                    <Button onClick={(event) => handleDeleteArt(currentDeleteId, event)} color="error">Excluir</Button>
+                </DialogActions>
+            </Dialog>
+
+            <Snackbar open={openSnackDelete} autoHideDuration={6000} onClose={handleCloseSnackDelete}>
+                <Alert onClose={handleCloseSnackDelete} severity="success" sx={{ width: '100%' }}>
+                    Fonte apagada com sucesso!
+                </Alert>
+            </Snackbar>
+            <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
         </Paper>
     )
 }
