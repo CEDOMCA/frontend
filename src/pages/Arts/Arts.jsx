@@ -1,4 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import SearchIcon from '@mui/icons-material/Search';
 import {
     Paper,
@@ -17,14 +19,18 @@ import {
     DialogActions,
     Slide,
     Snackbar,
-
-
+    Grid,
+    Box,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem
 } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import { useState, useEffect } from 'react';
 import * as React from 'react';
 import { ResourceListItem } from '../../components/ResourceListItem/ResourceListItem';
-import { getArts, deleteArt } from '../../services/api';
+import { getArts, deleteArt, getFonts } from '../../services/api';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -44,7 +50,8 @@ export default function Arts() {
     const [openConfirm, setOpenConfirm] = useState(false);
     const [currentDeleteId, setCurrentDeleteId] = useState("");
     const [openSnackDelete, setOpenSnackDelete] = React.useState(false);
-    //const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(false);
+    const [fonts, setFonts] = useState([]);
 
     const handleDeleteArt = async (id, event) => {
         event.preventDefault();
@@ -75,6 +82,18 @@ export default function Arts() {
             }
         } catch (err) {
             setHidden(false);
+        }
+    };
+    const fetchFonts = async () => {
+        setLoading(true);
+        try {
+            const { data } = await getFonts();
+            const fonts = data;
+            setFonts(fonts);
+            setLoading(false);
+        } catch (err) {
+            console.log(err);
+            setLoading(false);
         }
     };
 
@@ -113,6 +132,15 @@ export default function Arts() {
         }
 
         setOpenSnackDelete(false);
+    };
+
+    const handleClickOpen = () => {
+        setOpen(true);
+        fetchFonts();
+    };
+
+    const handleClose = () => {
+        setOpen(false);
     };
 
     const buildSkeletonList = () => (
@@ -177,7 +205,7 @@ export default function Arts() {
                             disabled={false}
                             size="small"
                             variant="contained"
-                            //onClick={handleClickOpen}
+                            onClick={handleClickOpen}
                             sx={{
                                 whiteSpace: 'nowrap',
                                 minWidth: 'max-content',
@@ -201,6 +229,104 @@ export default function Arts() {
             <List alignItems="center" sx={{ width: '100%', bgcolor: 'background.paper' }}>
                 {loadingData ? buildSkeletonList() : buildArtsList()}
             </List>
+            <Dialog
+                open={open}
+                fullWidth
+                maxWidth={'lg'}
+                TransitionComponent={Transition}
+                keepMounted
+                onClose={handleClose}
+                aria-describedby="alert-dialog-slide-description"
+            >
+                <DialogTitle>
+                    <Grid container direction="row" justifyContent="space-between" alignItems="center">
+                        <Button onClick={handleClose}>
+                            <KeyboardArrowLeft />
+                            Voltar
+                        </Button>
+                        {"Cadastrar Obra"}
+                        <Button variant="contained" >
+                            Cadastrar
+                        </Button>
+                    </Grid>
+                </DialogTitle>
+                <DialogContent>
+                    <Box
+                        noValidate
+                        component="form"
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            m: 'auto',
+                            width: 'auto',
+                        }}
+                    >
+                        <Grid
+                            container
+                            direction="row"
+                            justifyContent="space-around"
+                            alignItems="center"
+                            columns={12}
+                            sx={{ mt: 2 }}
+                        >
+                            <Grid item xs={4}>
+                                <TextField
+                                    name="code"
+                                    required
+                                    fullWidth
+                                    id="code"
+                                    label="Código"
+                                    sx={{ mt: 2 }}
+
+                                //onChange={(e) => setName(e.target.value)}
+                                />
+
+                                <TextField
+                                    required
+                                    fullWidth
+                                    id="title"
+                                    label="Título"
+                                    name="title"
+                                    sx={{ mt: 2 }}
+                                //onChange={(e) => setDescription(e.target.value)}
+                                />
+
+                                <FormControl sx={{ mt: 2 }}>
+                                    <InputLabel id="demo-simple-select-label" >Tipos de fonte</InputLabel>
+                                    <Select
+                                        sx={{ width: 385 }}
+                                        labelId="demo-simple-select-outlined-label"
+                                        id="demo-simple-select-outlined"
+                                        label="Possíveis Valores"
+                                        name="domain"
+                                    //value={input.domain}
+                                    //onChange={(event) => handleCharChanges(index, event)}
+                                    >
+                                        {fonts.map(font => (
+                                            <MenuItem key={font.id} value={font.id}>{font.name}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid container
+                                direction="column"
+                                justifyContent="center"
+                                alignItems="center" xs={4}>
+                                <Typography>Adicionar a fonte digitalizada</Typography>
+                                <CloudUploadIcon color="primary" sx={{ fontSize: 150 }} />
+                                <Button
+                                    variant="contained"
+                                    component="span"
+                                    color="primary"
+                                    label='Selecionar arquivo'>
+                                    <input type="file" />
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </DialogContent>
+                <DialogActions />
+            </Dialog>
             <Dialog
                 open={openConfirm}
                 TransitionComponent={Transition}
