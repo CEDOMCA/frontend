@@ -20,12 +20,46 @@ import { createSession } from '../../services/api';
 const theme = createTheme();
 
 export default function SignIn() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email,] = useState('');
+  const [password,] = useState('');
   const [error, setError] = useState('');
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const { authenticated, setId } = useContext(AuthContext);
+
+  const [form, setForm] = useState({});
+  const [errors, setErrors] = useState({});
+
+  const setField = (field, value) => {
+    setForm({
+      ...form,
+      [field]: value
+    })
+
+    if (errors[field]) setErrors({
+      ...errors,
+      [field]: null
+    })
+  }
+  const findFormErrors = () => {
+    const { email, password } = form;
+    const newErrors = {};
+    // rating errors
+    if (!email || email === '') newErrors.email = 'Email obrigatório';
+    else if (!email.includes('@')) newErrors.email = 'Email inválido';
+    // comment errors
+    if (!password || password === '') newErrors.password = 'Senha obrigatório';
+    else if (password.length > 18)
+      newErrors.password = 'Senha muito longa! Sua senha deve conter entre 8 e 18 caracteres';
+    else if (password.length < 8)
+      newErrors.password = 'Senha muito curta! Sua senha deve conter entre 8 e 18 caracteres';
+
+
+    return newErrors;
+  };
+
+
+
 
   useEffect(() => {
     if (authenticated) {
@@ -35,20 +69,28 @@ export default function SignIn() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const newErrors = findFormErrors();
 
-    try {
-      setOpen(true);
-      const response = await createSession(email, password);
-      localStorage.setItem('uid', response.data.id);
-      setId(response.data.id);
-      setOpen(false);
-      navigate('/main', { replace: true });
-    } catch (err) {
-      if (err.response.data.message) {
-        setError(err.response.data.message);
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      console.log('ÁQUUIIII', newErrors);
+    } else {
+      try {
+        setOpen(true);
+        const response = await createSession(email, password);
+        localStorage.setItem('uid', response.data.id);
+        setId(response.data.id);
+        setOpen(false);
+        navigate('/main', { replace: true });
+      } catch (err) {
+        if (err.response.data.message) {
+          setError(err.response.data.message);
+        }
+        setOpen(false);
       }
-      setOpen(false);
     }
+
+
   };
 
   return (
@@ -78,11 +120,8 @@ export default function SignIn() {
               label="E-mail"
               name="email"
               autoComplete="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setError('');
-              }}
+              onChange={(e) => setField('email', e.target.value)}
+              {...(errors.email && { error: true, helperText: errors.email })}
             />
             <TextField
               margin="normal"
@@ -93,11 +132,8 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setError('');
-              }}
+              onChange={(e) => setField('password', e.target.value)}
+              {...(errors.password && { error: true, helperText: errors.password })}
             />
             {error && <Alert severity="warning">{error}</Alert>}
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
@@ -114,7 +150,7 @@ export default function SignIn() {
                 Não tem uma conta? Cadastre-se
               </Link>
               <Link href="/recover-password" variant="body2">
-                Esqueceu sua senha? 
+                Esqueceu sua senha?
               </Link>
             </Stack>
           </Box>
