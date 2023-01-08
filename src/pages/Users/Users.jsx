@@ -13,6 +13,7 @@ import {
   List,
   Dialog,
   DialogContent,
+  DialogActions,
   Slide,
   FormControl,
   InputLabel,
@@ -23,12 +24,12 @@ import {
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import axios from 'axios';
+
 import { Country, State, City } from 'country-state-city';
-import id from 'date-fns/esm/locale/id/index.js';
+
 import { useState, useEffect } from 'react';
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import { ResourceListItem } from '../../components/ResourceListItem/ResourceListItem';
 import { getUsers, deleteUser, updateUserId, getUserId } from '../../services/api';
 
@@ -45,26 +46,43 @@ function AdminUsers() {
 
   const [users, setUsers] = useState([]);
   const [, setHidden] = useState(false);
+  //validation
   const [errors, setErrors] = useState({});
-  const [, setMessage] = useState('');
+  const [,] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [country, setCountry] = useState('');
   const [state, setState] = useState('');
   const [city, setCity] = useState('');
   const [role, setRole] = useState('');
-  const [form] = useState({});
+  const [form, setForm] = useState({});
   const allCountry = Country.getAllCountries();
-  const navigate = useNavigate();
-  const [, setShow] = useState(false);
+  const [,] = useState(false);
 
   // vindo de fonts
   const [, setLoading] = useState(false);
-  const [name, setName] = useState('');
+  const [, setName] = useState('');
   const [, setDescription] = useState('');
   const [, setInputChars] = useState([{ name: '', domain: '' }]);
   const [, setOpenSnack] = React.useState(false);
   const [, setOpenSnackDelete] = React.useState(false);
   const [currentId, setCurrentId] = useState('');
+
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [currentDeleteId, setCurrentDeleteId] = useState("");
+
+
+  const setField = (field, value) => {
+    setForm({
+      ...form,
+      [field]: value
+    })
+
+    if (errors[field]) setErrors({
+      ...errors,
+      [field]: null
+    })
+  }
+
 
   //vindo de fonts
   const handleClickSnack = () => {
@@ -74,6 +92,11 @@ function AdminUsers() {
   const handleClickSnackDelete = () => {
     setOpenSnackDelete(true);
   };
+
+  const handleCloseConfirm = () => {
+    setOpenConfirm(false);
+    setCurrentDeleteId("");
+  }
 
   const fetchUsers = async () => {
     try {
@@ -105,6 +128,13 @@ function AdminUsers() {
   }, [searchString, users]);
 
   const fetchUserId = async (id) => {
+    setField('fullName', "");
+    setBirthDate("");
+    setCountry("");
+    setCity("");
+    setState("");
+    setRole("");
+    setCurrentId("");
     try {
       setLoading(true);
       const { data } = await getUserId(id);
@@ -115,7 +145,7 @@ function AdminUsers() {
       const cityObj = City.getCitiesOfState(countryObj.isoCode, stateObj.isoCode).find(
         (c) => c.name === data.city,
       );
-      setName(data.fullName);
+      setField('fullName', data.fullName);
       setBirthDate(data.birthDate);
       setCountry(countryObj);
       setCity(cityObj);
@@ -137,30 +167,41 @@ function AdminUsers() {
   const handleSubmitUpdate = async (e, id) => {
     e.preventDefault();
     setLoading(true);
-    const data = {
-      fullName: name,
-      birthDate: birthDate,
-      country: country.name,
-      state: state.name,
-      city: city.name,
-      role: role,
-      id: id,
-    };
-    try {
-      await updateUserId(id, data);
-      setLoading(false);
-      handleClose();
-      handleClickSnack();
-      fetchUsers();
-    } catch (err) {
-      setLoading(false);
-      console.log(err);
+    const newErrors = findFormErrors()
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+    } else {
+      const data = {
+        fullName: form.fullName,
+        birthDate: birthDate,
+        country: country.name,
+        state: state.name,
+        city: city.name,
+        role: role,
+        id: id,
+      };
+      try {
+        await updateUserId(id, data);
+        setForm({});
+        setLoading(false);
+        handleClose();
+        handleClickSnack();
+        fetchUsers();
+        setCurrentId("");
+      } catch (err) {
+        setLoading(false);
+        console.log(err);
+      }
     }
+
+
   };
 
   const handleDeleteUser = async (id, event) => {
     event.preventDefault();
     setLoading(true);
+    setCurrentDeleteId("");
+    setOpenConfirm(false);
 
     try {
       await deleteUser(id);
@@ -180,64 +221,14 @@ function AdminUsers() {
   };
 
   const findFormErrors = () => {
-    const { name, email, password, confirmPassword } = form;
+    const { fullName } = form;
     const newErrors = {};
-    // name errors
-    if (!name || name === '') newErrors.name = 'Nome obrigatório';
-    // rating errors
-    if (!email || email === '') newErrors.email = 'Email obrigatório';
-    else if (!email.includes('@')) newErrors.email = 'Email inválido';
-    // comment errors
-    if (!password || password === '') newErrors.password = 'Senha obrigatório';
-    else if (password.length > 18)
-      newErrors.password = 'Senha muito longa! Sua senha deve conter entre 8 e 18 caracteres';
-    else if (password.length < 8)
-      newErrors.password = 'Senha muito curta! Sua senha deve conter entre 8 e 18 caracteres';
-
-    if (!confirmPassword || confirmPassword === '')
-      newErrors.confirmPassword = 'Confirmar senha obrigatório';
-    else if (confirmPassword !== password) newErrors.confirmPassword = 'As senhas devem ser igual';
+    // fullName errors
+    if (!fullName || fullName === '') newErrors.fullName = 'Nome obrigatório';
 
     return newErrors;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const newErrors = findFormErrors();
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      console.log(newErrors);
-    } else {
-      console.log(country);
-      setOpen(true);
-      const options = {
-        fullName: name,
-        role: role,
-        birthdate: birthDate,
-        country: country.name,
-        state: state.name,
-        city: city.name,
-        id: id,
-      };
-      try {
-        await axios.post('https://web-production-8fea.up.railway.app/users', options);
-        setOpen(false);
-        navigate('/', { replace: true });
-      } catch (err) {
-        setOpen(false);
-        console.log(err);
-        setShow(true);
-        let errorMsg = err.response.data.message.toString();
-        let newErrorMsg = errorMsg.replaceAll(',', '\n\n');
-        setMessage(newErrorMsg);
-        setTimeout(function () {
-          setShow(false);
-        }, 7000);
-      }
-    }
-  };
 
   const buildSkeletonList = () => (
     <>
@@ -250,25 +241,32 @@ function AdminUsers() {
   const buildUsersList = () =>
     searchString === ''
       ? users.map((user) => (
-          <ResourceListItem
-            key={user.id}
-            primary={user.fullName}
-            secondary={user.email}
-            onClickDelete={(event) => handleDeleteUser(user.id, event)}
-            onClickUpdate={(event) => handleUpdateUser(user.id, event)}
-            isLoading={loadingData}
-          />
-        ))
+        <ResourceListItem
+          key={user.id}
+          primary={user.fullName}
+          secondary={user.email}
+          onClickDelete={(event) => showConfirmDelte(user.id, event)}
+          onClickUpdate={(event) => handleUpdateUser(user.id, event)}
+          isLoading={loadingData}
+        />
+      ))
       : searchResult.map((user) => (
-          <ResourceListItem
-            key={user.id}
-            primary={user.fullName}
-            secondary={user.email}
-            onClickDelete={(event) => handleDeleteUser(user.id, event)}
-            onClickUpdate={(event) => handleUpdateUser(user.id, event)}
-            isLoading={loadingData}
-          />
-        ));
+        <ResourceListItem
+          key={user.id}
+          primary={user.fullName}
+          secondary={user.email}
+          onClickDelete={(event) => showConfirmDelte(user.id, event)}
+          onClickUpdate={(event) => handleUpdateUser(user.id, event)}
+          isLoading={loadingData}
+        />
+      ));
+
+  const showConfirmDelte = (index, event) => {
+    event.preventDefault();
+    setOpenConfirm(true);
+    setCurrentDeleteId(index);
+  };
+
 
   return (
     <div>
@@ -313,6 +311,7 @@ function AdminUsers() {
         <List alignItems="center" sx={{ width: '100%', bgcolor: 'background.paper' }}>
           {loadingData ? buildSkeletonList() : buildUsersList()}
         </List>
+
         <Dialog
           open={open}
           fullWidth
@@ -326,9 +325,13 @@ function AdminUsers() {
             <Grid container direction="row" justifyContent="space-between" alignItems="center">
               <Button onClick={handleClose}>
                 <KeyboardArrowLeft />
-                Back
+                Voltar
               </Button>
               {'Editar usuário'}
+              <Grid>
+                {' '}
+              </Grid>
+
             </Grid>
           </DialogTitle>
           <DialogContent>
@@ -342,7 +345,7 @@ function AdminUsers() {
                 width: 'auto',
               }}
             >
-              <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+              <Box component="form" noValidate sx={{ mt: 3 }}>
                 <Grid container spacing={2} columns={12}>
                   <Grid item xs={12}>
                     <TextField
@@ -351,10 +354,11 @@ function AdminUsers() {
                       required
                       fullWidth
                       id="fullName"
-                      value={name}
+                      value={form.fullName}
                       label="Nome completo"
-                      onChange={(e) => setName(e.target.value)}
-                      {...(errors.name && { error: true, helperText: errors.name })}
+                      onChange={(e) => setField('fullName', e.target.value)}
+                      InputLabelProps={{ shrink: true }}
+                      {...(errors.fullName && { error: true, helperText: errors.fullName })}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -362,9 +366,9 @@ function AdminUsers() {
                       <DesktopDatePicker
                         label="Data de nascimento *"
                         inputFormat="DD/MM/YYYY"
-                        value={birthDate}
+                        value={form.birthDate}
                         renderInput={(params) => <TextField {...params} />}
-                        onChange={(e) => setBirthDate(e)}
+                        onChange={(e) => setField('birthDate', e)}
                       />
                     </LocalizationProvider>
                   </Grid>
@@ -465,11 +469,25 @@ function AdminUsers() {
                   sx={{ mt: 3, mb: 2 }}
                   onClick={(event) => handleSubmitUpdate(event, currentId)}
                 >
-                  Confirmar edição
+                  Confirmar
                 </Button>
               </Box>
             </Box>
           </DialogContent>
+        </Dialog>
+        <Dialog
+          open={openConfirm}
+          TransitionComponent={Transition}
+          keepMounted
+          onClose={handleClose}
+          aria-describedby="alert-dialog-slide-description"
+        >
+          <DialogTitle>{"Deseja excluir este usuário?"}</DialogTitle>
+          <DialogContent />
+          <DialogActions>
+            <Button onClick={handleCloseConfirm} >Cancelar</Button>
+            <Button onClick={(event) => handleDeleteUser(currentDeleteId, event)} color="error">Excluir</Button>
+          </DialogActions>
         </Dialog>
       </Paper>
     </div>
