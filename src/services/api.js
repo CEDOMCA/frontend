@@ -35,3 +35,7 @@ export const getArts = async () => api.get('/artworks');
 export const deleteArt = async (id) => api.delete(`/artworks/${id}`);
 
 export const createArt = async (data) => api.post('/artworks', data);
+
+export const getArtId = async (id) => api.get(`/artworks/${id}`);
+
+export const updateArtId = async (id, data) => api.put(`/artworks/${id}`, data);

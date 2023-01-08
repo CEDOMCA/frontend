@@ -24,13 +24,14 @@ import {
     FormControl,
     InputLabel,
     Select,
-    MenuItem
+    MenuItem,
+    Collapse
 } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import { useState, useEffect } from 'react';
 import * as React from 'react';
 import { ResourceListItem } from '../../components/ResourceListItem/ResourceListItem';
-import { getArts, deleteArt, getFonts, createArt } from '../../services/api';
+import { getArts, deleteArt, getFonts, createArt, getArtId, updateArtId } from '../../services/api';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -52,9 +53,25 @@ export default function Arts() {
     const [openSnackDelete, setOpenSnackDelete] = React.useState(false);
     const [open, setOpen] = useState(false);
     const [fonts, setFonts] = useState([]);
-    const [form, setForm] = useState({});
     const [errors, setErrors] = useState({});
     const [openSnack, setOpenSnack] = React.useState(false);
+    const [selectedFile, setSelectedFile] = useState();
+    const [isFilePicked, setIsFilePicked] = useState(false);
+    const [errorFile, setErrorFile] = useState(false);
+    const fileRef = React.useRef();
+    const [currentId, setCurrentId] = useState("");
+    const [isUpdate, setIsUpdate] = useState(false);
+    const [code, setCode] = useState("");
+    const [title, setTitle] = useState("");
+    const [font, setFont] = useState("");
+
+    const awaitPromise = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    const changeHandler = (event) => {
+        setSelectedFile(event.target.files[0]);
+        setIsFilePicked(true);
+        setErrorFile(false);
+    };
 
     const handleDeleteArt = async (id, event) => {
         event.preventDefault();
@@ -100,22 +117,7 @@ export default function Arts() {
         }
     };
 
-    const setField = (field, value) => {
-        setForm({
-            ...form,
-            [field]: value,
-        });
-
-        if (errors[field]) {
-            setErrors({
-                ...errors,
-                [field]: null,
-            });
-        }
-    };
-
     const findFormErrors = () => {
-        const { code, title, font, file } = form;
         const newErrors = {};
 
         if (!code || code === '') newErrors.code = 'Código obrigatório';
@@ -124,11 +126,18 @@ export default function Arts() {
 
         if (!font || font === '') newErrors.font = 'Fonte obrigatório';
 
-        if (!file || file === '') newErrors.file = 'Arquivo obrigatório';
+        if (!isFilePicked) {
+            setErrorFile(true);
+            changeErrorState();
+        }
 
         return newErrors;
     };
 
+    const changeErrorState = async () => {
+        await awaitPromise(2000);
+        setErrorFile(false);
+    }
     useEffect(() => {
         document.title = 'CEDOMCA | Lista de obras';
 
@@ -172,9 +181,16 @@ export default function Arts() {
     };
 
     const handleClose = () => {
-        setForm({});
+        setCode("");
+        setTitle("");
+        setFont("");
         setErrors([]);
+        setSelectedFile();
+        fileRef.current.value = "";
+        setIsFilePicked(false);
         setOpen(false);
+        setErrorFile(false)
+        setIsUpdate(false);
     };
 
     const handleClickSnack = () => {
@@ -194,19 +210,89 @@ export default function Arts() {
 
 
         const newErrors = findFormErrors();
-
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
         } else {
             setLoading(true);
+
+            const formData = new FormData();
+            formData.append('File', selectedFile);
+            console.log(formData);
+
+            const attr = {
+                name: selectedFile.name,
+                value: "arquivo"
+            }
+
             const data = {
-                code: form.code,
-                title: form.title,
-                font: form.font
-                //attributes: form.file,
+                code: code,
+                title: title,
+                font: font,
+                attributes: attr
             };
             try {
                 await createArt(data);
+                setLoading(false);
+                handleClose();
+                handleClickSnack();
+                fetchArts();
+            } catch (err) {
+                setLoading(false);
+                console.log(err);
+            }
+        }
+    };
+
+    const fetchArtId = async (id) => {
+        try {
+            setLoading(true);
+            const { data } = await getArtId(id);
+            setCode(data.code);
+            setTitle(data.title);
+            setFont(data.font);
+            setCurrentId(id);
+            setLoading(false);
+        } catch (err) {
+            setLoading(false);
+        }
+    };
+
+    const handleUpdateArt = (id, event) => {
+        event.preventDefault();
+
+        fetchArtId(id);
+        setIsUpdate(true);
+        fetchFonts()
+        setOpen(true);
+    };
+
+    const handleSubmitUpdate = async (e, id) => {
+        e.preventDefault();
+
+
+        const newErrors = findFormErrors();
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+        } else {
+            setLoading(true);
+
+            const formData = new FormData();
+            formData.append('File', selectedFile);
+            console.log(formData);
+
+            const attr = {
+                name: selectedFile.name,
+                value: "arquivo"
+            }
+
+            const data = {
+                code: code,
+                title: title,
+                font: font,
+                attributes: attr
+            };
+            try {
+                await updateArtId(id, data);
                 setLoading(false);
                 handleClose();
                 handleClickSnack();
@@ -234,7 +320,7 @@ export default function Arts() {
                     primary={art.title}
                     secondary={art.font}
                     onClickDelete={(event) => showConfirmDelete(art.id, event)}
-                    //onClickUpdate={(event) => handleUpdateArt(art.id, event)}
+                    onClickUpdate={(event) => handleUpdateArt(art.id, event)}
                     isLoading={loadingData}
                 />
             ))
@@ -244,7 +330,7 @@ export default function Arts() {
                     primary={art.title}
                     secondary={art.font}
                     onClickDelete={(event) => showConfirmDelete(art.id, event)}
-                    //onClickUpdate={(event) => handleUpdateArt(art.id, event)}
+                    onClickUpdate={(event) => handleUpdateArt(art.id, event)}
                     isLoading={loadingData}
                 />
             ));
@@ -319,10 +405,12 @@ export default function Arts() {
                             <KeyboardArrowLeft />
                             Voltar
                         </Button>
-                        {"Cadastrar Obra"}
-                        <Button variant="contained" onClick={(event) => handleSubmit(event)}>
+                        {isUpdate ? "Editar obra" : "Cadastrar obra"}
+                        {isUpdate ? (<Button variant="contained" onClick={event => handleSubmitUpdate(event, currentId)}>
+                            Editar
+                        </Button>) : (<Button variant="contained" onClick={handleSubmit}>
                             Cadastrar
-                        </Button>
+                        </Button>)}
                     </Grid>
                 </DialogTitle>
                 <DialogContent>
@@ -352,7 +440,9 @@ export default function Arts() {
                                     id="code"
                                     label="Código"
                                     sx={{ mt: 2 }}
-                                    onChange={(e) => setField('code', e.target.value)}
+                                    value={code}
+                                    InputLabelProps={{ shrink: true }}
+                                    onChange={(e) => setCode(e.target.value)}
                                     {...(errors.code && {
                                         error: true,
                                         helperText: errors.code,
@@ -366,7 +456,9 @@ export default function Arts() {
                                     label="Título"
                                     name="title"
                                     sx={{ mt: 2 }}
-                                    onChange={(e) => setField('title', e.target.value)}
+                                    value={title}
+                                    InputLabelProps={{ shrink: true }}
+                                    onChange={(e) => setTitle(e.target.value)}
                                     {...(errors.title && {
                                         error: true,
                                         helperText: errors.title,
@@ -384,13 +476,13 @@ export default function Arts() {
                                         labelId="demo-simple-select-outlined-label"
                                         id="demo-simple-select-outlined"
                                         label="Possíveis Valores"
-                                        name="domain"
-                                        value={form.font}
-                                        onChange={(e) => setField('font', e.target.value)}
+                                        name="font"
+                                        value={font}
+                                        onChange={(e) => setFont(e.target.value)}
 
                                     >
                                         {fonts.map(font => (
-                                            <MenuItem key={font.id} value={font.id}>{font.name}</MenuItem>
+                                            <MenuItem key={font.id} value={font.name}>{font.name}</MenuItem>
                                         ))}
                                     </Select>
                                 </FormControl>
@@ -406,8 +498,15 @@ export default function Arts() {
                                     component="span"
                                     color="primary"
                                     label='Selecionar arquivo'>
-                                    <input type="file" />
+                                    <input type="file" onChange={changeHandler} ref={fileRef}
+                                    />
                                 </Button>
+                                <Collapse in={errorFile}>
+                                    <Alert severity="error" sx={{ mt: 2 }}>
+                                        Arquivo obrigatório
+                                    </Alert>
+                                </Collapse>
+
                             </Grid>
                         </Grid>
                     </Box>
