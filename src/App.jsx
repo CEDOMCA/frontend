@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import { Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import { TheNavBar } from './components/TheNavBar/TheNavBar';
 import { AuthContext } from './contexts/auth';
+import Arts from './pages/Arts/Arts';
 import { ChangePassword } from './pages/ChangePassword/ChangePassword';
 import Fonts from './pages/Fonts/Fonts';
 import Main from './pages/Main/Main';
@@ -65,6 +66,16 @@ export default function App() {
             </Private>
           }
         />
+
+        <Route
+          path="/arts"
+          element={
+            <Private>
+              <Arts />
+            </Private>
+          }
+        />
+
         <Route path="/signup" element={<SignUp />} />
         <Route
           path="/users"

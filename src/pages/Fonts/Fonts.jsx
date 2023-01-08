@@ -232,6 +232,12 @@ export default function Fonts() {
     }
   };
 
+  const showConfirmDelete = (index, event) => {
+    event.preventDefault();
+    setOpenConfirm(true);
+    setCurrentDeleteId(index);
+  };
+
   const buildSkeletonList = () => (
     <>
       <ResourceListItem isLoading={loadingData} />
@@ -247,7 +253,7 @@ export default function Fonts() {
           key={font.id}
           primary={font.name}
           secondary={font.description}
-          onClickDelete={(event) => handleDeleteFont(font.id, event)}
+          onClickDelete={(event) => showConfirmDelete(font.id, event)}
           onClickUpdate={(event) => handleUpdateFont(font.id, event)}
           isLoading={loadingData}
         />
@@ -257,7 +263,7 @@ export default function Fonts() {
           key={font.id}
           primary={font.name}
           secondary={font.description}
-          onClickDelete={(event) => handleDeleteFont(font.id, event)}
+          onClickDelete={(event) => showConfirmDelete(font.id, event)}
           onClickUpdate={(event) => handleUpdateFont(font.id, event)}
           isLoading={loadingData}
         />
@@ -456,7 +462,7 @@ export default function Fonts() {
         open={openConfirm}
         TransitionComponent={Transition}
         keepMounted
-        onClose={handleClose}
+        onClose={handleCloseConfirm}
         aria-describedby="alert-dialog-slide-description"
       >
         <DialogTitle>{"Deseja excluir esta fonte?"}</DialogTitle>
