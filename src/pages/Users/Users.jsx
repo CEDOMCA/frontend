@@ -358,7 +358,7 @@ function AdminUsers() {
                       label="Nome completo"
                       onChange={(e) => setField('fullName', e.target.value)}
                       InputLabelProps={{ shrink: true }}
-                      {...(errors.name && { error: true, helperText: errors.name })}
+                      {...(errors.fullName && { error: true, helperText: errors.fullName })}
                     />
                   </Grid>
                   <Grid item xs={12}>
