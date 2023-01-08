@@ -368,7 +368,7 @@ function AdminUsers() {
                         inputFormat="DD/MM/YYYY"
                         value={birthDate}
                         renderInput={(params) => <TextField {...params} />}
-                        onChange={(e) => setBirthDate(e)}
+                        onChange={(e) => setField('birthDate', e)}
                       />
                     </LocalizationProvider>
                   </Grid>

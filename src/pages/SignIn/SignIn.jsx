@@ -20,8 +20,8 @@ import { createSession } from '../../services/api';
 const theme = createTheme();
 
 export default function SignIn() {
-  const [email,] = useState('');
-  const [password,] = useState('');
+  const [,] = useState('');
+  const [,] = useState('');
   const [error, setError] = useState('');
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -77,7 +77,7 @@ export default function SignIn() {
     } else {
       try {
         setOpen(true);
-        const response = await createSession(email, password);
+        const response = await createSession(form.email, form.password);
         localStorage.setItem('uid', response.data.id);
         setId(response.data.id);
         setOpen(false);
