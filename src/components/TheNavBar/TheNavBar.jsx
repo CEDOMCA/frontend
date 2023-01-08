@@ -2,27 +2,25 @@ import AdbIcon from '@mui/icons-material/Adb';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Stack, Button, Typography, AppBar, Toolbar } from '@mui/material';
 import { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../contexts/auth';
 import { TheNavBarTabs } from './TheNavBarTabs';
 
 export const TheNavBar = () => {
   const { authenticated, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
   };
 
   const handleLogoClick = () => {
-    navigate('/');
+    window.location.href = "/";
   }
 
   return (
     <AppBar position="static">
       <Toolbar>
-        <Stack 
-          direction="row" 
+        <Stack
+          direction="row"
           onClick={handleLogoClick}
           sx={{
             cursor: 'pointer',
