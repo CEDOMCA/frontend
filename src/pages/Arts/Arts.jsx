@@ -30,7 +30,7 @@ import MuiAlert from '@mui/material/Alert';
 import { useState, useEffect } from 'react';
 import * as React from 'react';
 import { ResourceListItem } from '../../components/ResourceListItem/ResourceListItem';
-import { getArts, deleteArt, getFonts } from '../../services/api';
+import { getArts, deleteArt, getFonts, createArt } from '../../services/api';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -52,6 +52,9 @@ export default function Arts() {
     const [openSnackDelete, setOpenSnackDelete] = React.useState(false);
     const [open, setOpen] = useState(false);
     const [fonts, setFonts] = useState([]);
+    const [form, setForm] = useState({});
+    const [errors, setErrors] = useState({});
+    const [openSnack, setOpenSnack] = React.useState(false);
 
     const handleDeleteArt = async (id, event) => {
         event.preventDefault();
@@ -97,6 +100,35 @@ export default function Arts() {
         }
     };
 
+    const setField = (field, value) => {
+        setForm({
+            ...form,
+            [field]: value,
+        });
+
+        if (errors[field]) {
+            setErrors({
+                ...errors,
+                [field]: null,
+            });
+        }
+    };
+
+    const findFormErrors = () => {
+        const { code, title, font, file } = form;
+        const newErrors = {};
+
+        if (!code || code === '') newErrors.code = 'Código obrigatório';
+
+        if (!title || title === '') newErrors.title = 'Título obrigatório';
+
+        if (!font || font === '') newErrors.font = 'Fonte obrigatório';
+
+        if (!file || file === '') newErrors.file = 'Arquivo obrigatório';
+
+        return newErrors;
+    };
+
     useEffect(() => {
         document.title = 'CEDOMCA | Lista de obras';
 
@@ -140,7 +172,50 @@ export default function Arts() {
     };
 
     const handleClose = () => {
+        setForm({});
+        setErrors([]);
         setOpen(false);
+    };
+
+    const handleClickSnack = () => {
+        setOpenSnack(true);
+    };
+
+    const handleCloseSnack = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpenSnack(false);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+
+        const newErrors = findFormErrors();
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+        } else {
+            setLoading(true);
+            const data = {
+                code: form.code,
+                title: form.title,
+                font: form.font
+                //attributes: form.file,
+            };
+            try {
+                await createArt(data);
+                setLoading(false);
+                handleClose();
+                handleClickSnack();
+                fetchArts();
+            } catch (err) {
+                setLoading(false);
+                console.log(err);
+            }
+        }
     };
 
     const buildSkeletonList = () => (
@@ -245,7 +320,7 @@ export default function Arts() {
                             Voltar
                         </Button>
                         {"Cadastrar Obra"}
-                        <Button variant="contained" >
+                        <Button variant="contained" onClick={(event) => handleSubmit(event)}>
                             Cadastrar
                         </Button>
                     </Grid>
@@ -277,8 +352,11 @@ export default function Arts() {
                                     id="code"
                                     label="Código"
                                     sx={{ mt: 2 }}
-
-                                //onChange={(e) => setName(e.target.value)}
+                                    onChange={(e) => setField('code', e.target.value)}
+                                    {...(errors.code && {
+                                        error: true,
+                                        helperText: errors.code,
+                                    })}
                                 />
 
                                 <TextField
@@ -288,10 +366,18 @@ export default function Arts() {
                                     label="Título"
                                     name="title"
                                     sx={{ mt: 2 }}
-                                //onChange={(e) => setDescription(e.target.value)}
+                                    onChange={(e) => setField('title', e.target.value)}
+                                    {...(errors.title && {
+                                        error: true,
+                                        helperText: errors.title,
+                                    })}
                                 />
 
-                                <FormControl sx={{ mt: 2 }}>
+                                <FormControl sx={{ mt: 2 }}
+                                    {...(errors.font && {
+                                        error: true,
+                                        helperText: errors.font,
+                                    })}>
                                     <InputLabel id="demo-simple-select-label" >Tipos de fonte</InputLabel>
                                     <Select
                                         sx={{ width: 385 }}
@@ -299,8 +385,9 @@ export default function Arts() {
                                         id="demo-simple-select-outlined"
                                         label="Possíveis Valores"
                                         name="domain"
-                                    //value={input.domain}
-                                    //onChange={(event) => handleCharChanges(index, event)}
+                                        value={form.font}
+                                        onChange={(e) => setField('font', e.target.value)}
+
                                     >
                                         {fonts.map(font => (
                                             <MenuItem key={font.id} value={font.id}>{font.name}</MenuItem>
@@ -341,7 +428,11 @@ export default function Arts() {
                     <Button onClick={(event) => handleDeleteArt(currentDeleteId, event)} color="error">Excluir</Button>
                 </DialogActions>
             </Dialog>
-
+            <Snackbar open={openSnack} autoHideDuration={6000} onClose={handleCloseSnack}>
+                <Alert onClose={handleCloseSnack} severity="success" sx={{ width: '100%' }}>
+                    Obra registrada com sucesso!
+                </Alert>
+            </Snackbar>
             <Snackbar open={openSnackDelete} autoHideDuration={6000} onClose={handleCloseSnackDelete}>
                 <Alert onClose={handleCloseSnackDelete} severity="success" sx={{ width: '100%' }}>
                     Fonte apagada com sucesso!

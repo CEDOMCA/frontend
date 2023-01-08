@@ -33,3 +33,5 @@ export const createFont = async (data) => api.post('/fonts', data);
 export const getArts = async () => api.get('/artworks');
 
 export const deleteArt = async (id) => api.delete(`/artworks/${id}`);
+
+export const createArt = async (data) => api.post('/artworks', data);
