@@ -29,10 +29,12 @@ import {
   IconButton,
 } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
+import Pagination from '@mui/material/Pagination';
 import { useState, useEffect } from 'react';
 import * as React from 'react';
 import { ResourceListItem } from '../../components/ResourceListItem/ResourceListItem';
 import { getFonts, deleteFont, getFontId, updateFontId, createFont } from '../../services/api';
+import usePagination from '../../services/pagination';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -248,7 +250,7 @@ export default function Fonts() {
 
   const buildFontsList = () =>
     searchString === ''
-      ? fonts.map((font) => (
+      ? _DATA.currentData().map((font) => (
         <ResourceListItem
           key={font.id}
           primary={font.name}
@@ -271,6 +273,17 @@ export default function Fonts() {
 
   const removeCharField = (index) => {
     setInputChars(inputs => inputs.filter((el, i) => i !== index))
+  };
+
+  let [page, setPage] = useState(1);
+  const PER_PAGE = 20;
+
+  const count = Math.ceil(fonts.length / PER_PAGE);
+  const _DATA = usePagination(fonts, PER_PAGE);
+
+  const handleChange = (e, p) => {
+    setPage(p);
+    _DATA.jump(p);
   };
 
   return (
@@ -486,6 +499,11 @@ export default function Fonts() {
       <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
+      {!loadingData && fonts.length !== 0 && searchString === '' && (
+        <Box display="flex" justifyContent="right">
+          <Pagination count={count} page={page} showFirstButton showLastButton onChange={handleChange} />
+        </Box>
+      )}
     </Paper>
   );
 }

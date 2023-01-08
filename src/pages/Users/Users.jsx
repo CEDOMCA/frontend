@@ -21,6 +21,7 @@ import {
   DialogTitle,
   Stack,
 } from '@mui/material';
+import Pagination from '@mui/material/Pagination';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -32,6 +33,7 @@ import * as React from 'react';
 
 import { ResourceListItem } from '../../components/ResourceListItem/ResourceListItem';
 import { getUsers, deleteUser, updateUserId, getUserId } from '../../services/api';
+import usePagination from '../../services/pagination';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -240,7 +242,7 @@ function AdminUsers() {
 
   const buildUsersList = () =>
     searchString === ''
-      ? users.map((user) => (
+      ? _DATA.currentData().map((user) => (
         <ResourceListItem
           key={user.id}
           primary={user.fullName}
@@ -267,6 +269,16 @@ function AdminUsers() {
     setCurrentDeleteId(index);
   };
 
+  let [page, setPage] = useState(1);
+  const PER_PAGE = 20;
+
+  const count = Math.ceil(users.length / PER_PAGE);
+  const _DATA = usePagination(users, PER_PAGE);
+
+  const handleChange = (e, p) => {
+    setPage(p);
+    _DATA.jump(p);
+  };
 
   return (
     <div>
@@ -489,6 +501,11 @@ function AdminUsers() {
             <Button onClick={(event) => handleDeleteUser(currentDeleteId, event)} color="error">Excluir</Button>
           </DialogActions>
         </Dialog>
+        {!loadingData && users.length !== 0 && searchString === '' && (
+          <Box display="flex" justifyContent="right">
+            <Pagination count={count} page={page} showFirstButton showLastButton onChange={handleChange} />
+          </Box>
+        )}
       </Paper>
     </div>
   );
