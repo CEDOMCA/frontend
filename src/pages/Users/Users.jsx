@@ -366,7 +366,7 @@ function AdminUsers() {
                       <DesktopDatePicker
                         label="Data de nascimento *"
                         inputFormat="DD/MM/YYYY"
-                        value={birthDate}
+                        value={form.birthDate}
                         renderInput={(params) => <TextField {...params} />}
                         onChange={(e) => setField('birthDate', e)}
                       />
