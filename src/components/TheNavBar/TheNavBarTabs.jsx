@@ -22,6 +22,7 @@ export const TheNavBarTabs = () => {
       aria-label="Itens de menu"
       textColor="inherit"
       indicatorColor="secondary"
+      TabIndicatorProps={{ style: { background: 'white' } }}
     >
       <Tab label="Obras" component={Link} to="/arts" />
       <Tab label="Fontes" component={Link} to="/fonts" />
