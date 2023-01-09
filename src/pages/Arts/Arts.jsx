@@ -520,7 +520,7 @@ export default function Arts() {
                 onClose={handleCloseConfirm}
                 aria-describedby="alert-dialog-slide-description"
             >
-                <DialogTitle>{"Deseja excluir esta fonte?"}</DialogTitle>
+                <DialogTitle>{"Deseja excluir esta obra?"}</DialogTitle>
                 <DialogContent />
                 <DialogActions>
                     <Button onClick={handleCloseConfirm} >Cancelar</Button>
