@@ -534,7 +534,7 @@ export default function Arts() {
             </Snackbar>
             <Snackbar open={openSnackDelete} autoHideDuration={6000} onClose={handleCloseSnackDelete}>
                 <Alert onClose={handleCloseSnackDelete} severity="success" sx={{ width: '100%' }}>
-                    Fonte apagada com sucesso!
+                    Obra apagada com sucesso!
                 </Alert>
             </Snackbar>
             <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
